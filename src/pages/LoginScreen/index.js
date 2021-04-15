@@ -103,7 +103,7 @@ const LoginScreen = () => {
             />
           )}
           name="login"
-          rules={{required: {value: true, message: 'Login is required'}}}
+          rules={{required: {value: true, message: 'Campo Login necessário'}}}
           defaultValue=""
         />
 
@@ -125,7 +125,7 @@ const LoginScreen = () => {
             />
           )}
           name="senha"
-          rules={{required: {value: true, message: 'Senha is required'}}}
+          rules={{required: {value: true, message: 'Campo Login necessário'}}}
           defaultValue=""
         />
 
