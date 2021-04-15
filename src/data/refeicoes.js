@@ -1,0 +1,58 @@
+export default [
+  {
+    id: 1,
+    idAluno: 1,
+    date: '02-25-2021',
+    periodo: 'm',
+    alimentos: [1, 3, 5],
+  },
+  {
+    id: 2,
+    idAluno: 1,
+    date: '02-25-2021',
+    periodo: 'v',
+    alimentos: [2, 7],
+  },
+  {
+    id: 3,
+    idAluno: 1,
+    date: '02-25-2021',
+    periodo: 'n',
+    alimentos: [3, 5],
+  },
+  {
+    id: 4,
+    idAluno: 1,
+    date: '02-26-2021',
+    periodo: 'm',
+    alimentos: [1, 3, 5],
+  },
+  {
+    id: 5,
+    idAluno: 1,
+    date: '02-26-2021',
+    periodo: 'm',
+    alimentos: [3, 5],
+  },
+  {
+    id: 6,
+    idAluno: 1,
+    date: '02-26-2021',
+    periodo: 'v',
+    alimentos: [5],
+  },
+  {
+    id: 7,
+    idAluno: 1,
+    date: '02-26-2021',
+    periodo: 'n',
+    alimentos: [2, 6],
+  },
+  {
+    id: 8,
+    idAluno: 1,
+    date: '02-26-2021',
+    periodo: 'n',
+    alimentos: [6, 8],
+  },
+];
