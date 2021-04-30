@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useState, useEffect} from 'react';
 import {useDispatch} from 'react-redux';
 import {useSelector} from 'react-redux';
 import {Platform, Alert} from 'react-native';
@@ -15,7 +15,11 @@ const LoginScreen = () => {
   const user = useSelector(state => state.userReducer);
   const dispatch = useDispatch();
 
+  useEffect(() => {}, []);
+
   const [isLoading, setIsLoading] = useState(false);
+  //const loginInputRef = React.useRef();
+  //const senhaInputRef = React.useRef();
   //const [login, setLogin] = useState(user.idAluno);
   //const [senha, setSenha] = useState('');
 
@@ -23,12 +27,7 @@ const LoginScreen = () => {
     control,
     handleSubmit,
     formState: {errors},
-  } = useForm({
-    defaultValues: {
-      login: user.idAluno,
-      password: '',
-    },
-  });
+  } = useForm();
 
   const onSubmit = data => {
     const {login, senha} = data;
@@ -94,12 +93,20 @@ const LoginScreen = () => {
               errorText={errors.login?.message}
               onBlur={onBlur}
               onChangeText={value => onChange(value)}
+              autoFocus={true}
               value={value}
               placeholder="Digite seu login"
               placeholderTextColor="#555"
               keyboardType="numeric"
               maxLength={8}
               returnKeyType="next"
+              ref={input => {
+                this.loginInput = input;
+              }}
+              onSubmitEditing={() => {
+                this.senhaInput.focus();
+              }}
+              blurOnSubmit={false}
             />
           )}
           name="login"
@@ -108,6 +115,7 @@ const LoginScreen = () => {
         />
 
         <Controller
+          name="senha"
           control={control}
           render={({field: {onChange, onBlur, value}}) => (
             <Input
@@ -121,11 +129,13 @@ const LoginScreen = () => {
               placeholderTextColor="#555"
               returnKeyType="send"
               secureTextEntry={true}
+              ref={input => {
+                this.senhaInput = input;
+              }}
               onSubmitEditing={handleSubmit(onSubmit)}
             />
           )}
-          name="senha"
-          rules={{required: {value: true, message: 'Campo Login necessário'}}}
+          rules={{required: {value: true, message: 'Campo Senha necessário'}}}
           defaultValue=""
         />
 

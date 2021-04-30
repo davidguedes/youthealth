@@ -14,10 +14,10 @@ export default (state = initialState, action) => {
       return {
         ...state,
         nome: action.payload.nome,
-        dataNasc: action.payload.dataNasc,
+        dataNasc: action.payload.dataNasc.toLocaleDateString(),
         email: action.payload.email,
         idAluno: action.payload.idAluno,
-        curso: action.payload.curso,
+        selectedCurso: action.payload.selectedCurso,
         perfil: 'u',
         token: action.payload.token,
       };
@@ -36,7 +36,7 @@ export default (state = initialState, action) => {
         dataNasc: action.payload.dataNasc,
         email: action.payload.email,
         idAluno: action.payload.idAluno,
-        curso: action.payload.curso,
+        selectedCurso: action.payload.selectedCurso,
       };
   }
   return state;

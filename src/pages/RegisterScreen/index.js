@@ -1,6 +1,7 @@
-import React, {useState} from 'react';
+import React, {useState, useEffect} from 'react';
 import {useDispatch} from 'react-redux';
-import {Platform, Alert} from 'react-native';
+import {Platform, Alert, Keyboard} from 'react-native';
+import {Picker} from '@react-native-picker/picker';
 import {useNavigation} from '@react-navigation/native';
 import {Page, KeyboardArea, ScrollView, TextButton} from './styles';
 import DefaultInput from '../../components/DefaultInput';
@@ -8,24 +9,42 @@ import DefaultButton from '../../components/DefaultButton';
 import {DateTouchable, DateInput} from '../../components/DefaultDateTimePicker';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import Spinner from 'react-native-loading-spinner-overlay';
-import {response} from 'express';
 const api = require('axios');
 
 const RegisterScren = () => {
   const navigation = useNavigation();
   const dispatch = useDispatch();
 
+  useEffect(() => {
+    getCursos();
+  }, []);
+
+  const [cursos, setCursos] = useState([]);
+
+  const getCursos = async () => {
+    try {
+      const response = await api.get('http://192.168.0.12:5000/cursos', {});
+      if (response.data.cursos.length > 0) {
+        setCursos([...response.data.cursos]);
+      }
+    } catch (err) {
+      console.log(err);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   const [nome, setNome] = useState('');
   const [dataNasc, setDataNasc] = useState(new Date());
   const [email, setEmail] = useState('');
   const [idAluno, setIdAluno] = useState('');
-  const [curso, setCurso] = useState('');
+  const [selectedCurso, setSelectedCurso] = useState();
   const [senha, setSenha] = useState('');
   const [confirmarSenha, setConfirmarSenha] = useState('');
   const [show, setShow] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
 
-  const onChange = (event, selectedDate) => {
+  const onChangeTime = (event, selectedDate) => {
     const currentDate = selectedDate || dataNasc;
     setShow(Platform.OS === 'ios');
     setDataNasc(currentDate);
@@ -41,7 +60,7 @@ const RegisterScren = () => {
           dataNasc: dataNasc,
           email: email,
           idAluno: idAluno,
-          curso: curso,
+          curso: selectedCurso,
           senha: senha,
         },
       );
@@ -52,7 +71,7 @@ const RegisterScren = () => {
           dataNasc,
           email,
           idAluno,
-          curso,
+          selectedCurso,
           token: response.token,
         },
       });
@@ -89,10 +108,9 @@ const RegisterScren = () => {
       Alert.alert('Dados inválidos', 'Você precisa de um ID');
       this.input_4.focus();
       return;
-    } else if (!curso) {
+    } else if (!selectedCurso) {
       setIsLoading(false);
       Alert.alert('Dados inválidos', 'Você precisa de um curso');
-      this.input_5.focus();
       return;
     } else if (!senha) {
       setIsLoading(false);
@@ -115,15 +133,6 @@ const RegisterScren = () => {
 
     signUpAct();
   };
-
-  /*
-    dispatch({
-      type: 'CREATE_USER',
-      payload: {nome, dataNasc, email, idAluno, curso, senha},
-    });
-    Alert.alert('Sucesso', 'Cadastro realizado, ' + nome + '!');
-    navigation.navigate('Home');
-    */
 
   const toggleRegisterClick = () => {
     setIsLoading(true);
@@ -152,6 +161,7 @@ const RegisterScren = () => {
               setShow(true);
             }}
           />
+
           <DateTouchable activeOpaticy={1} onPress={() => setShow(true)}>
             <DateInput
               placeholder="Data de nascimento"
@@ -170,9 +180,10 @@ const RegisterScren = () => {
               mode={'date'}
               maximumDate={new Date()}
               display="default"
-              onChange={onChange}
+              onChange={onChangeTime}
             />
           )}
+
           <DefaultInput
             placeholder="Email"
             placeholderTextColor="#555"
@@ -188,6 +199,7 @@ const RegisterScren = () => {
               this.input_4.focus();
             }}
           />
+
           <DefaultInput
             placeholder="ID de aluno"
             placeholderTextColor="#555"
@@ -200,24 +212,27 @@ const RegisterScren = () => {
               this.input_4 = input;
             }}
             blurOnSubmit={false}
-            onSubmitEditing={() => {
-              this.input_5.focus();
-            }}
+            onSubmitEditing={Keyboard.dismiss}
           />
-          <DefaultInput
-            placeholder="Curso"
-            placeholderTextColor="#555"
-            returnKeyType="next"
-            value={curso}
-            onChangeText={n => setCurso(n)}
-            ref={input => {
-              this.input_5 = input;
-            }}
-            blurOnSubmit={false}
-            onSubmitEditing={() => {
-              this.input_6.focus();
-            }}
-          />
+
+          <Picker
+            selectedValue={selectedCurso}
+            onValueChange={(itemValue, itemIndex) =>
+              setSelectedCurso(itemValue)
+            }
+            style={{color: '#555555'}}>
+            {cursos.map((item, index) => {
+              return (
+                <Picker.Item
+                  style={{color: '#FFFFFF'}}
+                  label={item.titulo}
+                  value={item.valor}
+                  key={index}
+                />
+              );
+            })}
+          </Picker>
+
           <DefaultInput
             placeholder="Senha"
             placeholderTextColor="#555"
@@ -233,6 +248,7 @@ const RegisterScren = () => {
               this.input_7.focus();
             }}
           />
+
           <DefaultInput
             placeholder="Confirmar senha"
             placeholderTextColor="#555"

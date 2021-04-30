@@ -51,7 +51,7 @@ const HomeScreen = () => {
           menu de opções e comece agora mesmo a aproveitar nosso App da melhor
           forma possível.
         </Description>
-        <Image source={require('../../assets/logo/logo-big.png')} />
+        <Image source={require('../../assets/logo/logo.png')} />
       </Header>
     </Container>
   );

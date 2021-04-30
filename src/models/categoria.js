@@ -1,7 +1,12 @@
-const mongoose = require('../database/');
+const mongoose = require('../database');
 
 const CategoriaSchema = new mongoose.Schema({
-  nome: {
+  titulo: {
+    type: String,
+    require: true,
+    unique: true,
+  },
+  valor: {
     type: String,
     require: true,
     unique: true,

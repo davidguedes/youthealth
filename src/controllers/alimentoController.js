@@ -2,7 +2,6 @@ const express = require('express');
 const authMiddleware = require('../middlewares/auth');
 
 const Alimento = require('../models/alimento');
-const Categoria = require('../models/categoria');
 
 const router = express.Router();
 
@@ -40,7 +39,18 @@ router.post('/', async (req, res) => {
 });
 
 router.put('/:alimentoId', async (req, res) => {
-  res.send({user: req.userId});
+  //res.send({user: req.userId});
+  try {
+    const alimento = await Alimento.findByIdAndUpdate(
+      req.params.alimentoId,
+      req.body,
+    );
+
+    return res.send({alimento});
+  } catch (error) {
+    console.log(error);
+    return res.status(400).send({error: 'Erro ao alterar o alimento'});
+  }
 });
 
 router.delete('/:alimentoId', async (req, res) => {

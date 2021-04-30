@@ -1,6 +1,6 @@
-import React, {useState, useEffect} from 'react';
-import {useSelector, useDispatch} from 'react-redux';
-import {Platform, Alert, Keyboard} from 'react-native';
+import React, {useState} from 'react';
+import {useDispatch} from 'react-redux';
+import {Platform, Alert, StyleSheet} from 'react-native';
 import {Picker} from '@react-native-picker/picker';
 import {useNavigation} from '@react-navigation/native';
 import {Page, KeyboardArea, ScrollView, TextButton} from './styles';
@@ -11,48 +11,65 @@ import DateTimePicker from '@react-native-community/datetimepicker';
 import Spinner from 'react-native-loading-spinner-overlay';
 const api = require('axios');
 
-const SettingsScreen = () => {
+const RegisterScren = () => {
   const navigation = useNavigation();
-  const user = useSelector(state => state.userReducer);
   const dispatch = useDispatch();
 
-  useEffect(() => {
-    getCursos();
-  }, []);
+  const [nome, setNome] = useState('');
+  const [dataNasc, setDataNasc] = useState(new Date());
+  const [email, setEmail] = useState('');
+  const [idAluno, setIdAluno] = useState('');
+  const [selectedCurso, setSelectedCurso] = useState();
+  const [curso, setCurso] = useState('');
+  const [senha, setSenha] = useState('');
+  const [confirmarSenha, setConfirmarSenha] = useState('');
+  const [show, setShow] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
 
-  const [cursos, setCursos] = useState([]);
+  const onChangeTime = (event, selectedDate) => {
+    const currentDate = selectedDate || dataNasc;
+    setShow(Platform.OS === 'ios');
+    setDataNasc(currentDate.toLocaleDateString());
+    this.input_3.focus();
+  };
 
-  const getCursos = async () => {
+  const signUpAct = async () => {
     try {
-      const response = await api.get('http://192.168.0.12:5000/cursos', {});
-      if (response.data.cursos.length > 0) {
-        setCursos([...response.data.cursos]);
-      }
+      const response = await api.post(
+        'http://192.168.0.12:5000/auth/register',
+        {
+          nome: nome,
+          dataNasc: dataNasc,
+          email: email,
+          idAluno: idAluno,
+          curso: selectedCurso,
+          senha: senha,
+        },
+      );
+      dispatch({
+        type: 'CREATE_USER',
+        payload: {
+          nome,
+          dataNasc,
+          email,
+          idAluno,
+          curso,
+          token: response.token,
+        },
+      });
+      Alert.alert('Sucesso', 'Cadastro realizado, ' + nome + '!');
+      navigation.navigate('Home');
     } catch (err) {
       console.log(err);
+      Alert.alert('Erro ao cadastrar-se', err.response.data.error);
+      this.input_1.focus();
+      setSenha('');
     } finally {
       setIsLoading(false);
     }
   };
 
-  const [nome, setNome] = useState(user.nome);
-  const [dataNasc, setDataNasc] = useState(new Date(user.dataNasc));
-  const [email, setEmail] = useState(user.email);
-  const [idAluno, setIdAluno] = useState(user.idAluno);
-  const [selectedCurso, setSelectedCurso] = useState(user.selectedCurso);
-  const [senha, setSenha] = useState();
-  const [confirmarSenha, setConfirmarSenha] = useState();
-  const [show, setShow] = useState(false);
-  const [isLoading, setIsLoading] = useState(false);
-
-  const onChange = (event, selectedDate) => {
-    const currentDate = selectedDate || dataNasc;
-    setShow(Platform.OS === 'ios');
-    setDataNasc(currentDate);
-  };
-
-  const toggleSettingsClick = () => {
-    setIsLoading(true);
+  const signUp = () => {
     if (!nome) {
       setIsLoading(false);
       Alert.alert('Dados inválidos', 'Você precisa de um nome!');
@@ -73,9 +90,10 @@ const SettingsScreen = () => {
       Alert.alert('Dados inválidos', 'Você precisa de um ID');
       this.input_4.focus();
       return;
-    } else if (!selectedCurso) {
+    } else if (!curso) {
       setIsLoading(false);
       Alert.alert('Dados inválidos', 'Você precisa de um curso');
+      this.input_5.focus();
       return;
     } else if (!senha) {
       setIsLoading(false);
@@ -95,12 +113,13 @@ const SettingsScreen = () => {
       this.input_6.focus();
       return;
     }
-    dispatch({
-      type: 'ALTER_USER',
-      payload: {nome, dataNasc, email, idAluno, selectedCurso, senha},
-    });
-    Alert.alert('Sucesso', 'Cadastro alterado, ' + nome + '!');
-    navigation.navigate('ListAlimentos');
+
+    signUpAct();
+  };
+
+  const toggleRegisterClick = () => {
+    setIsLoading(true);
+    signUp();
   };
 
   return (
@@ -110,7 +129,7 @@ const SettingsScreen = () => {
         <ScrollView>
           <DefaultInput
             placeholder="Nome completo"
-            placeholderTextColor="#EEE"
+            placeholderTextColor="#555"
             autoFocus={true}
             autoCapitalize="words"
             returnKeyType="next"
@@ -122,20 +141,18 @@ const SettingsScreen = () => {
             blurOnSubmit={false}
             onSubmitEditing={() => {
               this.input_2.focus();
+              setShow(true);
             }}
           />
+
           <DateTouchable activeOpaticy={1} onPress={() => setShow(true)}>
             <DateInput
               placeholder="Data de nascimento"
-              placeholderTextColor="#EEE"
+              placeholderTextColor="#555"
               value={dataNasc.toLocaleDateString()}
               editable={false} // optional
               ref={input => {
                 this.input_2 = input;
-              }}
-              blurOnSubmit={false}
-              onSubmitEditing={() => {
-                this.input_3.focus();
               }}
             />
           </DateTouchable>
@@ -146,12 +163,13 @@ const SettingsScreen = () => {
               mode={'date'}
               maximumDate={new Date()}
               display="default"
-              onChange={onChange}
+              onChange={onChangeTime}
             />
           )}
+
           <DefaultInput
             placeholder="Email"
-            placeholderTextColor="#EEE"
+            placeholderTextColor="#555"
             keyboardType="email-address"
             returnKeyType="next"
             value={email}
@@ -164,9 +182,10 @@ const SettingsScreen = () => {
               this.input_4.focus();
             }}
           />
+
           <DefaultInput
             placeholder="ID de aluno"
-            placeholderTextColor="#EEE"
+            placeholderTextColor="#555"
             keyboardType="numeric"
             maxLength={8}
             returnKeyType="next"
@@ -176,27 +195,46 @@ const SettingsScreen = () => {
               this.input_4 = input;
             }}
             blurOnSubmit={false}
-            onSubmitEditing={Keyboard.dismiss}
+            onSubmitEditing={() => {
+              this.input_5.focus();
+            }}
           />
+
           <Picker
             selectedValue={selectedCurso}
             onValueChange={(itemValue, itemIndex) =>
               setSelectedCurso(itemValue)
-            }>
-            {cursos.map((item, index) => {
-              return (
-                <Picker.Item
-                  label={item.titulo}
-                  value={item.valor}
-                  key={index}
-                />
-              );
-            })}
+            }
+            style={styles.picker}>
+            <Picker.Item
+              label="Ciência da Computação"
+              value="cienciacomputacao"
+            />
+            <Picker.Item
+              label="Engenharia de Software"
+              value="engenhariaSoftware"
+            />
+            <Picker.Item label="Fisioterapia" value="fisioterapia" />
           </Picker>
+
+          <DefaultInput
+            placeholder="Curso"
+            placeholderTextColor="#555"
+            returnKeyType="next"
+            value={curso}
+            onChangeText={n => setCurso(n)}
+            ref={input => {
+              this.input_5 = input;
+            }}
+            blurOnSubmit={false}
+            onSubmitEditing={() => {
+              this.input_6.focus();
+            }}
+          />
+
           <DefaultInput
             placeholder="Senha"
-            placeholderTextColor="#EEE"
-            //editable={false}
+            placeholderTextColor="#555"
             returnKeyType="next"
             value={senha}
             secureTextEntry={true}
@@ -209,10 +247,10 @@ const SettingsScreen = () => {
               this.input_7.focus();
             }}
           />
+
           <DefaultInput
             placeholder="Confirmar senha"
-            placeholderTextColor="#EEE"
-            //editable={false}
+            placeholderTextColor="#555"
             returnKeyType="send"
             value={confirmarSenha}
             secureTextEntry={true}
@@ -221,18 +259,31 @@ const SettingsScreen = () => {
               this.input_7 = input;
             }}
             blurOnSubmit={false}
-            onSubmitEditing={toggleSettingsClick}
+            onSubmitEditing={toggleRegisterClick}
           />
         </ScrollView>
         <DefaultButton
           activeOpacity={0.6}
           underlayColor="#DDDDDD"
-          onPress={toggleSettingsClick}>
-          <TextButton>Alterar</TextButton>
+          onPress={toggleRegisterClick}>
+          <TextButton>Cadastrar-se</TextButton>
         </DefaultButton>
       </KeyboardArea>
     </Page>
   );
 };
 
-export default SettingsScreen;
+const styles = StyleSheet.create({
+  picker: {
+    borderWidth: 1,
+    borderColor: '#555',
+    color: '#000',
+    fontSize: 18,
+    width: 300,
+    height: 45,
+    margin: 10,
+    paddingLeft: 10,
+  },
+});
+
+export default RegisterScren;

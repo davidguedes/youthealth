@@ -54,7 +54,7 @@ function ListAlimentosScreen() {
             autorization: token,
           },
         });
-        if (response.data.alimentos.length > 0) {
+        if (response.data.alimentos.length >= 0) {
           setListaAlimentos([...response.data.alimentos]);
         }
       } catch (err) {

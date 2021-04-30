@@ -1,14 +1,16 @@
-import React from 'react';
+import React, {forwardRef} from 'react';
 import styled from 'styled-components/native';
 
-export default function Input(props) {
+const Input = forwardRef(function Input(props, ref) {
   return (
     <>
-      <TextInput {...props} />
+      <TextInput {...props} innerRef={ref} />
       {props.errorText && <Text>{props.errorText}</Text>}
     </>
   );
-}
+});
+
+export default Input;
 
 const TextInput = styled.TextInput`
   border-bottom-width: 1px;

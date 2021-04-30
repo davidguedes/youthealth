@@ -1,6 +1,7 @@
-import React, {useState, useLayoutEffect} from 'react';
+import React, {useState, useLayoutEffect, useEffect} from 'react';
 import {useSelector} from 'react-redux';
-import {Platform, Alert} from 'react-native';
+import {Platform, Alert, Keyboard} from 'react-native';
+import {Picker} from '@react-native-picker/picker';
 import {useNavigation, useRoute} from '@react-navigation/native';
 import {Container, KeyboardArea, ScrollView, TextButton} from './styles';
 import DefaultInput from '../../components/DefaultInput';
@@ -9,6 +10,7 @@ import {
   CancelButton,
   CancelButtonImage,
 } from '../../components/DefaultCancelButton';
+import Spinner from 'react-native-loading-spinner-overlay';
 const api = require('axios');
 
 function EditAlimentoScreen() {
@@ -19,9 +21,26 @@ function EditAlimentoScreen() {
   const type = route.params.type;
   const idAlimento = route.params.idAlimento;
 
+  const [isLoading, setIsLoading] = useState(false);
+  const [categorias, setCategorias] = useState([]);
   const [textButton, setTextButton] = useState('');
   const [descricao, setDescricao] = useState('');
-  const [categoria, setCategoria] = useState('');
+  const [selectedCategoria, setSelectedCategoria] = useState();
+
+  useEffect(() => {
+    getCategorias();
+  }, []);
+
+  const getCategorias = async () => {
+    try {
+      const response = await api.get('http://192.168.0.12:5000/categorias', {});
+      if (response.data.categorias.length > 0) {
+        setCategorias([...response.data.categorias]);
+      }
+    } catch (err) {
+      console.log(err);
+    }
+  };
 
   useLayoutEffect(() => {
     console.log('tipo:' + type + '. idAlimento: ' + idAlimento);
@@ -64,7 +83,7 @@ function EditAlimentoScreen() {
           );
           if (response.data.alimento) {
             setDescricao(response.data.alimento.descricao);
-            setCategoria(response.data.alimento.categoria);
+            setSelectedCategoria(response.data.alimento.categoria);
           }
         } catch (err) {
           console.log(err);
@@ -75,23 +94,100 @@ function EditAlimentoScreen() {
     setTextButton(type === 'addAlimento' ? 'Cadastrar' : 'Salvar');
   }, [idAlimento, navigation, token, type]);
 
+  const cadastrarAlimento = async () => {
+    try {
+      const response = await api.post(
+        'http://192.168.0.12:5000/alimentos',
+        {
+          descricao: descricao,
+          categoria: selectedCategoria,
+        },
+        {
+          headers: {
+            autorization: token,
+          },
+        },
+      );
+      Alert.alert(
+        'Sucesso',
+        'Cadastro do alimento ' + descricao + ' realizado!',
+      );
+      navigation.navigate('ListAlimentos');
+    } catch (err) {
+      console.log(err);
+      Alert.alert('Erro ao cadastrar!', err.response.data.error);
+    } finally {
+      setIsLoading(false);
+      Alert.alert(
+        'Dados',
+        'Descrição: ' + descricao + ', Categoria: ' + selectedCategoria,
+      );
+    }
+  };
+
+  const editarAlimento = async () => {
+    try {
+      const response = await api.put(
+        'http://192.168.0.12:5000/alimentos/' + idAlimento,
+        {
+          descricao: descricao,
+          categoria: selectedCategoria,
+        },
+        {
+          headers: {
+            autorization: token,
+          },
+        },
+      );
+      Alert.alert(
+        'Sucesso',
+        'Alteração do alimento ' + descricao + ' realizada!',
+      );
+      navigation.navigate('ListAlimentos');
+    } catch (err) {
+      console.log(err);
+      Alert.alert('Erro ao atualizar!', err.response.data.error);
+    } finally {
+      setIsLoading(false);
+      Alert.alert(
+        'Dados',
+        'Descrição: ' + descricao + ', Categoria: ' + selectedCategoria,
+      );
+    }
+  };
+
+  /*
+  dispatch({
+        type: 'CREATE_ALIMENTO',
+        payload: {
+          descricao,
+          selectedCategoria,
+        },
+      }); */
+
   const toggleRegisterClick = () => {
+    setIsLoading(true);
     if (!descricao) {
-      Alert.alert('Dados inválidos', 'Você precisa de uma descrião!');
+      setIsLoading(false);
+      Alert.alert('Dados inválidos', 'Você precisa de uma descrição!');
       this.input_1.focus();
       return;
-    } else if (!categoria) {
+    } else if (!selectedCategoria) {
+      setIsLoading(false);
       Alert.alert('Dados inválidos', 'Você precisa selecionar uma categoria!');
-      this.input_2.focus();
       return;
     }
 
-    Alert.alert('Sucesso', 'Alimento cadastrado!');
-    navigation.navigate('Home');
+    if (type === 'addAlimento') {
+      cadastrarAlimento();
+    } else if (type === 'editAlimento') {
+      editarAlimento();
+    }
   };
 
   return (
     <Container>
+      <Spinner visible={isLoading} />
       <KeyboardArea behavior={Platform.OS === 'ios' ? 'padding' : null}>
         <ScrollView>
           <DefaultInput
@@ -106,25 +202,24 @@ function EditAlimentoScreen() {
               this.input_1 = input;
             }}
             blurOnSubmit={false}
-            onSubmitEditing={() => {
-              this.input_2.focus();
-            }}
+            onSubmitEditing={Keyboard.dismiss}
           />
-          <DefaultInput
-            placeholder="Categoria"
-            placeholderTextColor="#555"
-            autoCapitalize="words"
-            returnKeyType="next"
-            value={categoria}
-            onChangeText={n => setCategoria(n)}
-            ref={input => {
-              this.input_2 = input;
-            }}
-            blurOnSubmit={false}
-            onSubmitEditing={() => {
-              this.input_3.focus();
-            }}
-          />
+
+          <Picker
+            selectedValue={selectedCategoria}
+            onValueChange={(itemValue, itemIndex) =>
+              setSelectedCategoria(itemValue)
+            }>
+            {categorias.map((item, index) => {
+              return (
+                <Picker.Item
+                  label={item.titulo}
+                  value={item.valor}
+                  key={index}
+                />
+              );
+            })}
+          </Picker>
         </ScrollView>
         <DefaultButton
           activeOpacity={0.6}

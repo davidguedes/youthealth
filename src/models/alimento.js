@@ -1,4 +1,4 @@
-const mongoose = require('../database/');
+const mongoose = require('../database');
 
 const AlimentoSchema = new mongoose.Schema({
   /*
@@ -12,6 +12,10 @@ const AlimentoSchema = new mongoose.Schema({
     type: String,
     require: true,
     unique: true,
+  },
+  categoria: {
+    type: String,
+    require: true,
   },
 });
 
