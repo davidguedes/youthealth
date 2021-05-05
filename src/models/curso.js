@@ -6,11 +6,6 @@ const CursoSchema = new mongoose.Schema({
     require: true,
     unique: true,
   },
-  valor: {
-    type: String,
-    require: true,
-    unique: true,
-  },
 });
 
 const Curso = mongoose.model('Curso', CursoSchema);

@@ -22,7 +22,8 @@ const UserSchema = new mongoose.Schema({
     require: true,
   },
   curso: {
-    type: String,
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Curso',
     require: true,
   },
   senha: {

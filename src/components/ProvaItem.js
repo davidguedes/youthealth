@@ -10,9 +10,6 @@ export const Box = styled.TouchableHighlight`
 export const HeaderItem = styled.View`
   align-items: center;
   justify-content: center;
-  border-style: solid;
-  border-bottom-color: #fff;
-  border-bottom-width: 1px;
 `;
 
 export const TextHeaderDate = styled.Text`
@@ -30,16 +27,20 @@ export const TextHeaderMateria = styled.Text`
 export const BodyItem = styled.View`
   align-items: center;
   justify-content: center;
+  border-style: solid;
+  border-top-color: #fff;
+  border-top-width: 1px;
 `;
 
 export const TextAnotacoes = styled.Text`
   font-size: 14px;
   text-align: justify;
-  padding: 10px 4px;
+  padding: 10px 4px 0px 4px;
 `;
 
 export const RadioAlerta = styled.Text`
   font-size: 12px;
   text-align: center;
   font-weight: bold;
+  padding-top: 10px;
 `;

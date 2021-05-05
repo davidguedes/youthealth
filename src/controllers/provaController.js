@@ -9,7 +9,10 @@ router.use(authMiddleware);
 
 router.get('/', async (req, res) => {
   try {
-    const provas = await Prova.find().populate('idAluno');
+    //const provas = await Prova.find().populate('idAluno');
+    const provas = await Prova.find({idAluno: req.userId}, {}).populate(
+      'idAluno',
+    );
 
     return res.send({provas});
   } catch (error) {
@@ -39,7 +42,14 @@ router.post('/', async (req, res) => {
 });
 
 router.put('/:provaId', async (req, res) => {
-  res.send({user: req.userId});
+  try {
+    const prova = await Prova.findByIdAndUpdate(req.params.provaId, req.body);
+
+    return res.send({prova});
+  } catch (error) {
+    console.log(error);
+    return res.status(400).send({error: 'Erro ao alterar a prova'});
+  }
 });
 
 router.delete('/:provaId', async (req, res) => {

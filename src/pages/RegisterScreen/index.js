@@ -79,9 +79,12 @@ const RegisterScren = () => {
       navigation.navigate('Home');
     } catch (err) {
       console.log(err);
-      Alert.alert('Erro ao cadastrar-se', err.response.data.error);
-      this.input_1.focus();
+      Alert.alert(
+        'Erro ao cadastrar-se',
+        err.response.data.error + 'Dados:' + selectedCurso,
+      );
       setSenha('');
+      setConfirmarSenha('');
     } finally {
       setIsLoading(false);
     }
@@ -226,7 +229,7 @@ const RegisterScren = () => {
                 <Picker.Item
                   style={{color: '#FFFFFF'}}
                   label={item.titulo}
-                  value={item.valor}
+                  value={item._id}
                   key={index}
                 />
               );

@@ -40,6 +40,8 @@ const SettingsScreen = () => {
   const [email, setEmail] = useState(user.email);
   const [idAluno, setIdAluno] = useState(user.idAluno);
   const [selectedCurso, setSelectedCurso] = useState(user.selectedCurso);
+  const [senha, setSenha] = useState();
+  const [confirmarSenha, setConfirmarSenha] = useState();
   const [show, setShow] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
 
@@ -75,10 +77,27 @@ const SettingsScreen = () => {
       setIsLoading(false);
       Alert.alert('Dados inválidos', 'Você precisa de um curso');
       return;
+    } else if (!senha) {
+      setIsLoading(false);
+      Alert.alert('Dados inválidos', 'Você precisa de uma senha');
+      this.input_6.focus();
+      return;
+    } else if (!confirmarSenha) {
+      setIsLoading(false);
+      Alert.alert('Dados inválidos', 'Você precisa confirmar a senha');
+      this.input_7.focus();
+      return;
+    } else if (senha !== confirmarSenha) {
+      setIsLoading(false);
+      Alert.alert('Dados inválidos', 'As senhas não conferem');
+      setSenha('');
+      setConfirmarSenha('');
+      this.input_6.focus();
+      return;
     }
     dispatch({
       type: 'ALTER_USER',
-      payload: {nome, dataNasc, email, idAluno, selectedCurso},
+      payload: {nome, dataNasc, email, idAluno, selectedCurso, senha},
     });
     Alert.alert('Sucesso', 'Cadastro alterado, ' + nome + '!');
     navigation.navigate('ListAlimentos');
@@ -91,7 +110,7 @@ const SettingsScreen = () => {
         <ScrollView>
           <DefaultInput
             placeholder="Nome completo"
-            placeholderTextColor="#555"
+            placeholderTextColor="#EEE"
             autoFocus={true}
             autoCapitalize="words"
             returnKeyType="next"
@@ -132,7 +151,7 @@ const SettingsScreen = () => {
           )}
           <DefaultInput
             placeholder="Email"
-            placeholderTextColor="#555"
+            placeholderTextColor="#EEE"
             keyboardType="email-address"
             returnKeyType="next"
             value={email}
@@ -147,7 +166,7 @@ const SettingsScreen = () => {
           />
           <DefaultInput
             placeholder="ID de aluno"
-            placeholderTextColor="#555"
+            placeholderTextColor="#EEE"
             keyboardType="numeric"
             maxLength={8}
             returnKeyType="next"
@@ -170,6 +189,36 @@ const SettingsScreen = () => {
               );
             })}
           </Picker>
+          <DefaultInput
+            placeholder="Senha"
+            placeholderTextColor="#EEE"
+            //editable={false}
+            returnKeyType="next"
+            value={senha}
+            secureTextEntry={true}
+            onChangeText={n => setSenha(n)}
+            ref={input => {
+              this.input_6 = input;
+            }}
+            blurOnSubmit={false}
+            onSubmitEditing={() => {
+              this.input_7.focus();
+            }}
+          />
+          <DefaultInput
+            placeholder="Confirmar senha"
+            placeholderTextColor="#EEE"
+            //editable={false}
+            returnKeyType="send"
+            value={confirmarSenha}
+            secureTextEntry={true}
+            onChangeText={n => setConfirmarSenha(n)}
+            ref={input => {
+              this.input_7 = input;
+            }}
+            blurOnSubmit={false}
+            onSubmitEditing={toggleSettingsClick}
+          />
         </ScrollView>
         <DefaultButton
           activeOpacity={0.6}

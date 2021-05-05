@@ -4,7 +4,6 @@ const initialState = {
   email: '',
   idAluno: '',
   curso: '',
-  perfil: '',
   token: '',
 };
 
@@ -18,7 +17,6 @@ export default (state = initialState, action) => {
         email: action.payload.email,
         idAluno: action.payload.idAluno,
         selectedCurso: action.payload.selectedCurso,
-        perfil: 'u',
         token: action.payload.token,
       };
 

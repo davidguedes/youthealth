@@ -17,7 +17,7 @@ const ProvaSchema = new mongoose.Schema({
   anotacoes: {
     type: String,
   },
-  alert: {
+  alerta: {
     type: Boolean,
     default: false,
   },

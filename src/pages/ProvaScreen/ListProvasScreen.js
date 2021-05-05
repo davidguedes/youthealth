@@ -1,6 +1,6 @@
 import React, {useState, useLayoutEffect} from 'react';
+import {useSelector} from 'react-redux';
 import {useNavigation} from '@react-navigation/native';
-import data from '../../data/provas';
 import {
   Container,
   AddButton,
@@ -26,9 +26,16 @@ import {
   FindImageButton,
   FindButton,
 } from '../../components/DefaultFind';
+import Spinner from 'react-native-loading-spinner-overlay';
+import DateTimePicker from '@react-native-community/datetimepicker';
+const api = require('axios');
 
 function ListProvasScreen() {
   const navigation = useNavigation();
+  const {token} = useSelector(state => state.userReducer);
+
+  const [listaProvas, setListaProvas] = useState([]);
+  const [isLoading, setIsLoading] = useState(false);
 
   useLayoutEffect(() => {
     navigation.setOptions({
@@ -36,30 +43,47 @@ function ListProvasScreen() {
       headerRight: () => (
         <AddButton
           underlayColor="transparent"
-          onPress={() => navigation.navigate('EditProva')}>
+          onPress={() => navigation.navigate('EditProva', {type: 'addProva'})}>
           <AddButtonImage source={require('../../assets/icons/add.png')} />
         </AddButton>
       ),
       headerLeft: false,
     });
-  }, [navigation]);
 
-  const [ListProvas] = useState(data);
+    const getProvas = async () => {
+      try {
+        const response = await api.get('http://192.168.0.12:5000/provas', {
+          headers: {
+            autorization: token,
+          },
+        });
+        if (response.data.provas.length >= 0) {
+          setListaProvas([...response.data.provas]);
+        }
+      } catch (err) {
+        console.log(err);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+    getProvas();
+  }, [listaProvas, navigation, token]);
 
   return (
     <Container>
-      {ListProvas.length === 0 && (
+      <Spinner visible={isLoading} />
+      {listaProvas.length === 0 && (
         <NoProvas>
           <NoProvasImage source={require('../../assets/icons/test.png')} />
           <NoProvasText>Nenhuma prova</NoProvasText>
         </NoProvas>
       )}
-      {ListProvas && (
+      {listaProvas.length > 0 && (
         <>
           <FindArea>
             <FindInput
               placeholder="Pesquise por uma prova"
-              placeholderTextColor="#EEE"
+              placeholderTextColor="#555"
               returnKeyType="send"
             />
             <FindButton activeOpacity={0.6} underlayColor="#DDDDDD">
@@ -69,29 +93,43 @@ function ListProvasScreen() {
             </FindButton>
           </FindArea>
           <FlatList
-            data={ListProvas}
+            data={listaProvas}
             showsVerticalScrollIndicator={false}
             showsHorizontalScrollIndicator={false}
-            keyExtractor={item => item.id.toString()}
+            keyExtractor={item => item._id.toString()}
             renderItem={({item}) => {
-              const {date, materia, anotacoes, alerta} = item;
+              const {dataProva, materia, anotacoes, alerta} = item;
               return (
-                <Box>
+                <Box
+                  activeOpacity={0.6}
+                  underlayColor="#DDDDDD"
+                  onPress={() =>
+                    navigation.navigate('EditProva', {
+                      type: 'editProva',
+                      idProva: item._id,
+                    })
+                  }>
                   <>
                     <HeaderItem>
-                      <TextHeaderDate>Data: {date}</TextHeaderDate>
+                      <TextHeaderDate>
+                        Data: {new Date(dataProva).toLocaleDateString()}
+                      </TextHeaderDate>
                       <TextHeaderMateria>Matéria: {materia}</TextHeaderMateria>
                     </HeaderItem>
-                    <BodyItem>
-                      <TextAnotacoes>{anotacoes}</TextAnotacoes>
-                      {alerta && <RadioAlerta>*ALERTA*</RadioAlerta>}
-                    </BodyItem>
+                    {(anotacoes.length > 0 || alerta) && (
+                      <BodyItem>
+                        {anotacoes.length > 0 && (
+                          <TextAnotacoes>{anotacoes}</TextAnotacoes>
+                        )}
+                        {alerta && <RadioAlerta>*ALERTA*</RadioAlerta>}
+                      </BodyItem>
+                    )}
                   </>
                 </Box>
               );
             }}
           />
-          <TextBottom>Total de provas: {ListProvas.length}</TextBottom>
+          <TextBottom>Total de provas: {listaProvas.length}</TextBottom>
         </>
       )}
     </Container>
