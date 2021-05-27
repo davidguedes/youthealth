@@ -37,11 +37,20 @@ router.post('/', async (req, res) => {
     return res.status(400).send({error: 'Erro ao cadastrar o alimento'});
   }
 });
+*/
 
-router.put('/:alimentoId', async (req, res) => {
-  res.send({user: req.userId});
+router.put('/:idAluno', async (req, res) => {
+  try {
+    const user = await User.findByIdAndUpdate(req.params.idAluno, req.body);
+
+    return res.send({user});
+  } catch (error) {
+    console.log(error);
+    return res.status(400).send({error: 'Erro ao alterar o usuário'});
+  }
 });
 
+/*
 router.delete('/:alimentoId', async (req, res) => {
   try {
     await Alimento.findByIdAndRemove(req.params.alimentoId);

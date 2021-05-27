@@ -1,4 +1,101 @@
-import React, {useState, useLayoutEffect, useEffect, useMemo} from 'react';
+const getAlimentos = async () => {
+  try {
+    const response = await api.get('http://192.168.0.12:5000/alimentos', {
+      headers: {
+        autorization: token,
+      },
+    });
+    if (response.data.alimentos.length >= 0) {
+      setListaAlimentos([...response.data.alimentos]);
+      console.log(listaAlimentos);
+      if (alimentos.length > 0) {
+        console.log(alimentos.length);
+        var alimentosFiltrados = listaAlimentos.filter(
+          alimento => alimentos.includes(alimento) === false,
+        );
+        console.log('Feito!');
+        setListaAlimentos([...alimentosFiltrados]);
+      }
+    }
+  } catch (err) {
+    console.log(err);
+  } finally {
+    setIsLoading(false);
+  }
+};
+
+/*
+  useEffect(() => {
+    const getAlimentos = async () => {
+      try {
+        const response = await api.get('http://192.168.0.12:5000/alimentos', {
+          headers: {
+            autorization: token,
+          },
+        });
+        if (response.data.alimentos.length >= 0) {
+          setListaAlimentos([...response.data.alimentos]);
+          console.log(listaAlimentos);
+          if (alimentos.length > 0) {
+            console.log(alimentos.length);
+            var alimentosFiltrados = listaAlimentos.filter(
+              alimento => alimentos.includes(alimento) === false,
+            );
+            console.log('Feito!');
+            setListaAlimentos([...alimentosFiltrados]);
+          }
+        }
+      } catch (err) {
+        console.log(err);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+    getAlimentos();
+  }, [alimentos, listaAlimentos, token]);
+*/
+
+/*
+  useEffect(() => {
+    setDidMount(true);
+    const getAlimentos = async () => {
+      try {
+        const response = await api.get('http://192.168.0.12:5000/alimentos', {
+          headers: {
+            autorization: token,
+          },
+        });
+        if (response.data.alimentos.length >= 0) {
+          setListaAlimentos([...response.data.alimentos]);
+          console.log(listaAlimentos);
+          if (alimentos.length > 0) {
+            console.log(alimentos.length);
+            var alimentosFiltrados = listaAlimentos.filter(
+              alimento => alimentos.includes(alimento) === false,
+            );
+            console.log('Feito!');
+            setListaAlimentos([...alimentosFiltrados]);
+          }
+        }
+      } catch (err) {
+        console.log(err);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+    getAlimentos();
+    return () => setDidMount(false);
+  }, [alimentos, token]);
+
+  if (!didMount) {
+    return null;
+  }
+*/
+
+/* --- */
+
+/*
+import React, {useState, useLayoutEffect, useEffect} from 'react';
 import {useSelector} from 'react-redux';
 import {Platform, Alert, Modal} from 'react-native';
 import {Picker} from '@react-native-picker/picker';
@@ -16,10 +113,6 @@ import {
   Box,
   BodyItem,
   Title,
-  BoxAlimento,
-  BodyAlimentoItem,
-  ButtonDelete,
-  ButtonDeleteText,
   BoxModal,
   BoxBodyModal,
   ButtonCloseModal,
@@ -30,10 +123,6 @@ import {
   CancelButton,
   CancelButtonImage,
 } from '../../components/DefaultCancelButton';
-import {
-  DeleteButton,
-  DeleteButtonImage,
-} from '../../components/DefaultDeleteButton';
 import {AddAlimento, TextAddAlimento} from '../../components/RefeicaoItem';
 import {
   FindArea,
@@ -75,7 +164,6 @@ function EditRefeicaoScreen() {
   const [show, setShow] = useState(false);
   const [modalAlimentos, setModalAlimentos] = useState(false);
   const [listaAlimentos, setListaAlimentos] = useState([]);
-  const [listaAlimentosReserva, setListaAlimentosReserva] = useState([]);
   //const [didMount, setDidMount] = useState(false);
 
   const onChangeTime = (event, selectedDate) => {
@@ -110,47 +198,8 @@ function EditRefeicaoScreen() {
             />
           </CancelButton>
         ),
-        headerRight: () => (
-          <DeleteButton
-            underlayColor="transparent"
-            onPress={() => {
-              Alert.alert('Deletar', 'Deseja realmente excluir a refeição?', [
-                {
-                  text: 'Cancelar',
-                  onPress: () => console.log('Cancel Pressed'),
-                  style: 'cancel',
-                },
-                {text: 'Confirmar', onPress: () => deletarRefeicao()},
-              ]);
-            }}>
-            <DeleteButtonImage
-              source={require('../../assets/icons/delete.png')}
-            />
-          </DeleteButton>
-        ),
       });
 
-      const deletarRefeicao = async () => {
-        try {
-          await api.delete('http://192.168.0.12:5000/refeicoes/' + idRefeicao, {
-            headers: {
-              autorization: token,
-            },
-          });
-          Alert.alert('Sucesso', 'Refeição deletada com sucesso!');
-          navigation.navigate('ListRefeicoes');
-        } catch (err) {
-          console.log(err);
-          Alert.alert('Erro ao deletar!', err.response.data.error);
-        } finally {
-          setIsLoading(false);
-        }
-      };
-    }
-  }, [idRefeicao, navigation, token, type]);
-
-  useEffect(() => {
-    if (type === 'editRefeicao') {
       const getRefeicoes = async () => {
         try {
           const response = await api.get(
@@ -176,7 +225,7 @@ function EditRefeicaoScreen() {
       };
       getRefeicoes();
     }
-  }, [idRefeicao, token, type]);
+  }, [idRefeicao, navigation, token, type]);
 
   useEffect(() => {
     const getAlimentos = async () => {
@@ -188,9 +237,7 @@ function EditRefeicaoScreen() {
         });
         if (response.data.alimentos.length >= 0) {
           setListaAlimentos([...response.data.alimentos]);
-          setListaAlimentosReserva([...response.data.alimentos]);
-          //console.log(listaAlimentos);
-          console.log('Alimentos carregados!');
+          console.log(listaAlimentos);
         }
       } catch (err) {
         console.log(err);
@@ -199,18 +246,18 @@ function EditRefeicaoScreen() {
       }
     };
     getAlimentos();
-  }, [token]);
+  }, [listaAlimentos, token]);
 
   useEffect(() => {
     if (alimentos.length > 0) {
       console.log(alimentos.length);
-      var alimentosFiltrados = listaAlimentosReserva.filter(
+      var alimentosFiltrados = listaAlimentos.filter(
         alimento => alimentos.includes(alimento) === false,
       );
       console.log('Feito!');
       setListaAlimentos([...alimentosFiltrados]);
     }
-  }, [alimentos, listaAlimentosReserva]);
+  }, [alimentos, listaAlimentos]);
 
   const cadastrarRefeicao = async () => {
     try {
@@ -288,11 +335,6 @@ function EditRefeicaoScreen() {
 
   const toggleShowAlimentos = () => {
     setModalAlimentos(!modalAlimentos);
-  };
-
-  const deleteItemLista = idItem => {
-    //alimentos.findbyidAndRemove(idItem);
-    Alert.alert('Deletar', 'Botão deletar pressionado. ' + idItem);
   };
 
   return (
@@ -408,13 +450,13 @@ function EditRefeicaoScreen() {
               renderItem={({item}) => {
                 const {descricao} = item;
                 return (
-                  <BoxAlimento>
+                  <Box activeOpacity={0.6} underlayColor="#DDDDDD">
                     <>
-                      <BodyAlimentoItem>
+                      <BodyItem>
                         <Title>{descricao}</Title>
-                      </BodyAlimentoItem>
+                      </BodyItem>
                     </>
-                  </BoxAlimento>
+                  </Box>
                 );
               }}
             />
@@ -438,3 +480,5 @@ function EditRefeicaoScreen() {
 }
 
 export default EditRefeicaoScreen;
+
+*/

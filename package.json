@@ -12,6 +12,7 @@
   },
   "dependencies": {
     "@react-native-community/async-storage": "^1.12.1",
+    "@react-native-community/checkbox": "^0.5.7",
     "@react-native-community/datetimepicker": "^3.3.0",
     "@react-native-picker/picker": "^1.15.0",
     "@react-navigation/bottom-tabs": "^5.11.8",

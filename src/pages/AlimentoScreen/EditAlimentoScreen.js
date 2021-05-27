@@ -10,6 +10,10 @@ import {
   CancelButton,
   CancelButtonImage,
 } from '../../components/DefaultCancelButton';
+import {
+  DeleteButton,
+  DeleteButtonImage,
+} from '../../components/DefaultDeleteButton';
 import Spinner from 'react-native-loading-spinner-overlay';
 const api = require('axios');
 
@@ -69,7 +73,42 @@ function EditAlimentoScreen() {
             />
           </CancelButton>
         ),
+        headerRight: () => (
+          <DeleteButton
+            underlayColor="transparent"
+            onPress={() => {
+              Alert.alert('Deletar', 'Deseja realmente excluir o alimento?', [
+                {
+                  text: 'Cancelar',
+                  onPress: () => console.log('Cancel Pressed'),
+                  style: 'cancel',
+                },
+                {text: 'Confirmar', onPress: () => deletarAlimento()},
+              ]);
+            }}>
+            <DeleteButtonImage
+              source={require('../../assets/icons/delete.png')}
+            />
+          </DeleteButton>
+        ),
       });
+
+      const deletarAlimento = async () => {
+        try {
+          await api.delete('http://192.168.0.12:5000/alimentos/' + idAlimento, {
+            headers: {
+              autorization: token,
+            },
+          });
+          Alert.alert('Sucesso', 'Alimento deletado com sucesso!');
+          navigation.navigate('ListAlimentos');
+        } catch (err) {
+          console.log(err);
+          Alert.alert('Erro ao deletar', err.response.data.error);
+        } finally {
+          setIsLoading(false);
+        }
+      };
 
       const getAlimentos = async () => {
         try {
@@ -96,7 +135,7 @@ function EditAlimentoScreen() {
 
   const cadastrarAlimento = async () => {
     try {
-      const response = await api.post(
+      await api.post(
         'http://192.168.0.12:5000/alimentos',
         {
           descricao: descricao,
@@ -127,7 +166,7 @@ function EditAlimentoScreen() {
 
   const editarAlimento = async () => {
     try {
-      const response = await api.put(
+      await api.put(
         'http://192.168.0.12:5000/alimentos/' + idAlimento,
         {
           descricao: descricao,
@@ -209,10 +248,12 @@ function EditAlimentoScreen() {
             selectedValue={selectedCategoria}
             onValueChange={(itemValue, itemIndex) =>
               setSelectedCategoria(itemValue)
-            }>
+            }
+            style={{color: '#555555'}}>
             {categorias.map((item, index) => {
               return (
                 <Picker.Item
+                  style={{color: '#FFFFFF'}}
                   label={item.titulo}
                   value={item.valor}
                   key={index}

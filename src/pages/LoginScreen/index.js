@@ -52,20 +52,17 @@ const LoginScreen = () => {
       dispatch({
         type: 'SIGNIN_USER',
         payload: {
-          nome: response.data.nome,
-          dataNasc: response.data.dataNasc,
-          email: response.data.email,
-          idAluno: response.data.idAluno,
-          curso: response.data.curso,
+          idUser: response.data.user._id,
+          nome: response.data.user.nome,
+          dataNasc: response.data.user.dataNasc,
+          email: response.data.user.email,
+          idAluno: response.data.user.idAluno,
+          curso: response.data.user.curso,
           token: 'Bearer ' + response.data.token,
         },
       });
       console.log(
-        'Token: ' +
-          response.data.token +
-          ' User: ' +
-          'Bearer ' +
-          response.data.user,
+        'Token: ' + response.data.token + '. Nome: ' + response.data.user._id,
       );
       navigation.navigate('Home');
     } catch (err) {

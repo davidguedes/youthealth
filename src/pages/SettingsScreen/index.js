@@ -39,7 +39,7 @@ const SettingsScreen = () => {
   const [dataNasc, setDataNasc] = useState(new Date(user.dataNasc));
   const [email, setEmail] = useState(user.email);
   const [idAluno, setIdAluno] = useState(user.idAluno);
-  const [selectedCurso, setSelectedCurso] = useState(user.selectedCurso);
+  const [selectedCurso, setSelectedCurso] = useState(user.curso);
   const [show, setShow] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
 
@@ -47,6 +47,39 @@ const SettingsScreen = () => {
     const currentDate = selectedDate || dataNasc;
     setShow(Platform.OS === 'ios');
     setDataNasc(currentDate);
+  };
+
+  const alterAct = async () => {
+    try {
+      const response = await api.put(
+        'http://192.168.0.12:5000/user/' + user.idUser,
+        {
+          nome: nome,
+          dataNasc: dataNasc,
+          curso: selectedCurso,
+        },
+        {
+          headers: {
+            autorization: user.token,
+          },
+        },
+      );
+      dispatch({
+        type: 'ALTER_USER',
+        payload: {
+          nome: nome,
+          dataNasc: dataNasc.toLocaleDateString(),
+          curso: selectedCurso,
+        },
+      });
+      Alert.alert('Sucesso', 'Cadastro alterado, ' + nome + '!');
+      navigation.navigate('Home');
+    } catch (err) {
+      console.log(err);
+      Alert.alert('Erro ao alterar os dados', err.response.data.error);
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   const toggleSettingsClick = () => {
@@ -76,12 +109,8 @@ const SettingsScreen = () => {
       Alert.alert('Dados inválidos', 'Você precisa de um curso');
       return;
     }
-    dispatch({
-      type: 'ALTER_USER',
-      payload: {nome, dataNasc, email, idAluno, selectedCurso},
-    });
-    Alert.alert('Sucesso', 'Cadastro alterado, ' + nome + '!');
-    navigation.navigate('ListAlimentos');
+
+    alterAct();
   };
 
   return (
@@ -135,6 +164,7 @@ const SettingsScreen = () => {
             placeholderTextColor="#555"
             keyboardType="email-address"
             returnKeyType="next"
+            editable={false}
             value={email}
             onChangeText={n => setEmail(n)}
             ref={input => {
@@ -151,6 +181,7 @@ const SettingsScreen = () => {
             keyboardType="numeric"
             maxLength={8}
             returnKeyType="next"
+            editable={false}
             value={idAluno}
             onChangeText={n => setIdAluno(n)}
             ref={input => {
@@ -163,10 +194,16 @@ const SettingsScreen = () => {
             selectedValue={selectedCurso}
             onValueChange={(itemValue, itemIndex) =>
               setSelectedCurso(itemValue)
-            }>
+            }
+            style={{color: '#555555'}}>
             {cursos.map((item, index) => {
               return (
-                <Picker.Item label={item.titulo} value={item._id} key={index} />
+                <Picker.Item
+                  style={{color: '#FFFFFF'}}
+                  label={item.titulo}
+                  value={item._id}
+                  key={index}
+                />
               );
             })}
           </Picker>

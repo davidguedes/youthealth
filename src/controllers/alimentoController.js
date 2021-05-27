@@ -2,6 +2,7 @@ const express = require('express');
 const authMiddleware = require('../middlewares/auth');
 
 const Alimento = require('../models/alimento');
+const Refeicao = require('../models/refeicao');
 
 const router = express.Router();
 
@@ -55,6 +56,21 @@ router.put('/:alimentoId', async (req, res) => {
 
 router.delete('/:alimentoId', async (req, res) => {
   try {
+    //await Refeicao.find({
+    //  alimentos: {$exists: req.params.alimentoId},
+    //}).count();
+    //await Refeicao.findOne({$match: {'alimentos': {ObjectId(req.params.alimentoId)}}});
+
+    const alimentoUsado = await Refeicao.findOne({
+      alimentos: {$in: [req.params.alimentoId]},
+    }).count();
+
+    if (alimentoUsado !== 0) {
+      return res.status(422).send({
+        error: 'Não é possível deletar alimentos já utilizados em refeições.',
+      });
+    }
+
     await Alimento.findByIdAndRemove(req.params.alimentoId);
 
     return res.send();

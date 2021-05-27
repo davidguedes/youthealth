@@ -2,7 +2,6 @@ const express = require('express');
 const authMiddleware = require('../middlewares/auth');
 
 const Refeicao = require('../models/refeicao');
-const Alimento = require('../models/alimento');
 
 const router = express.Router();
 
@@ -10,7 +9,10 @@ router.use(authMiddleware);
 
 router.get('/', async (req, res) => {
   try {
-    const refeicoes = await Refeicao.find().populate('idAluno');
+    //const refeicoes = await Refeicao.find().populate('idAluno');
+    const refeicoes = await Refeicao.find({idAluno: req.userId}, {}).populate(
+      'idAluno',
+    );
 
     return res.send({refeicoes});
   } catch (error) {
@@ -20,11 +22,11 @@ router.get('/', async (req, res) => {
 
 router.get('/:refeicaoId', async (req, res) => {
   try {
-    const refeicoes = await Refeicao.findById(req.params.refeicaoId).populate(
+    const refeicao = await Refeicao.findById(req.params.refeicaoId).populate(
       'idAluno',
     );
 
-    return res.send({refeicoes});
+    return res.send({refeicao});
   } catch (error) {
     return res.status(400).send({error: 'Erro listar a refeição'});
   }

@@ -67,12 +67,13 @@ const RegisterScren = () => {
       dispatch({
         type: 'CREATE_USER',
         payload: {
-          nome,
-          dataNasc,
-          email,
-          idAluno,
-          selectedCurso,
-          token: response.token,
+          idUser: response.data.user._id,
+          nome: response.data.user.nome,
+          dataNasc: response.data.user.dataNasc,
+          email: response.data.user.email,
+          idAluno: response.data.user.idAluno,
+          curso: response.data.user.selectedCurso,
+          token: 'Bearer ' + response.data.token,
         },
       });
       Alert.alert('Sucesso', 'Cadastro realizado, ' + nome + '!');

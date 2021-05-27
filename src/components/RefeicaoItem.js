@@ -42,3 +42,15 @@ export const TextAlimentos = styled.Text`
   font-size: 16px;
   text-align: center;
 `;
+
+export const AddAlimento = styled.TouchableHighlight`
+  background-color: #808080;
+  padding: 10px 25px;
+  border-radius: 10px;
+  margin-top: 15px;
+`;
+
+export const TextAddAlimento = styled.Text`
+  font-size: 18px;
+  color: #fff;
+`;

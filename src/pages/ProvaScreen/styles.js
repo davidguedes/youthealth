@@ -1,5 +1,6 @@
 import styled from 'styled-components/native';
 import {Image as Img, FlatList as FlatProvas} from 'react-native';
+import CheckBox from '@react-native-community/checkbox';
 
 export const Container = styled.SafeAreaView`
   flex: 1;
@@ -68,4 +69,15 @@ export const TextBottom = styled.Text`
   font-size: 10px;
   text-align: center;
   margin: 10px;
+`;
+
+export const CheckBoxContainer = styled.View`
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+`;
+
+export const CheckBoxText = styled.Text`
+  font-size: 18px;
+  text-transform: uppercase;
 `;

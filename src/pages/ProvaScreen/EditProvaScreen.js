@@ -2,12 +2,16 @@ import React, {useState, useLayoutEffect} from 'react';
 import {useSelector} from 'react-redux';
 import {Platform, Alert} from 'react-native';
 import {useNavigation, useRoute} from '@react-navigation/native';
+import CheckBox from '@react-native-community/checkbox';
+
 import {
   Container,
   KeyboardArea,
   ScrollView,
   InputAnotacoes,
   TextButton,
+  CheckBoxContainer,
+  CheckBoxText,
 } from './styles';
 import DefaultInput from '../../components/DefaultInput';
 import DefaultButton from '../../components/DefaultButton';
@@ -15,6 +19,10 @@ import {
   CancelButton,
   CancelButtonImage,
 } from '../../components/DefaultCancelButton';
+import {
+  DeleteButton,
+  DeleteButtonImage,
+} from '../../components/DefaultDeleteButton';
 import {DateTouchable, DateInput} from '../../components/DefaultDateTimePicker';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import Spinner from 'react-native-loading-spinner-overlay';
@@ -63,7 +71,42 @@ function EditProvaScreen() {
             />
           </CancelButton>
         ),
+        headerRight: () => (
+          <DeleteButton
+            underlayColor="transparent"
+            onPress={() => {
+              Alert.alert('Deletar', 'Deseja realmente excluir o alimento?', [
+                {
+                  text: 'Cancelar',
+                  onPress: () => console.log('Cancel Pressed'),
+                  style: 'cancel',
+                },
+                {text: 'Confirmar', onPress: () => deletarProva()},
+              ]);
+            }}>
+            <DeleteButtonImage
+              source={require('../../assets/icons/delete.png')}
+            />
+          </DeleteButton>
+        ),
       });
+
+      const deletarProva = async () => {
+        try {
+          await api.delete('http://192.168.0.12:5000/provas/' + idProva, {
+            headers: {
+              autorization: token,
+            },
+          });
+          Alert.alert('Sucesso', 'Prova deletada com sucesso!');
+          navigation.navigate('ListProvas');
+        } catch (err) {
+          console.log(err);
+          Alert.alert('Erro ao deletar!', err.response.data.error);
+        } finally {
+          setIsLoading(false);
+        }
+      };
 
       const getProvas = async () => {
         try {
@@ -99,7 +142,7 @@ function EditProvaScreen() {
 
   const cadastrarProva = async () => {
     try {
-      const response = await api.post(
+      await api.post(
         'http://192.168.0.12:5000/provas',
         {
           dataProva: dataProva,
@@ -125,13 +168,13 @@ function EditProvaScreen() {
 
   const editarProva = async () => {
     try {
-      const response = await api.put(
+      await api.put(
         'http://192.168.0.12:5000/provas/' + idProva,
         {
           dataProva: dataProva,
           materia: materia,
           anotacoes: anotacoes,
-          alerta: false,
+          alerta: alerta,
         },
         {
           headers: {
@@ -233,6 +276,14 @@ function EditProvaScreen() {
               this.input_3 = input;
             }}
           />
+          <CheckBoxContainer>
+            <CheckBox
+              value={alerta}
+              onValueChange={setAlerta}
+              tintColors={{true: '#555555'}}
+            />
+            <CheckBoxText>Alerta</CheckBoxText>
+          </CheckBoxContainer>
         </ScrollView>
         <DefaultButton
           activeOpacity={0.6}

@@ -1,4 +1,4 @@
-import React, {useState, useLayoutEffect} from 'react';
+import React, {useState, useLayoutEffect, useEffect} from 'react';
 import {useSelector} from 'react-redux';
 import {useNavigation} from '@react-navigation/native';
 import {
@@ -27,13 +27,13 @@ import {
   FindButton,
 } from '../../components/DefaultFind';
 import Spinner from 'react-native-loading-spinner-overlay';
-import DateTimePicker from '@react-native-community/datetimepicker';
 const api = require('axios');
 
 function ListProvasScreen() {
   const navigation = useNavigation();
   const {token} = useSelector(state => state.userReducer);
 
+  const [didMount, setDidMount] = useState(false);
   const [listaProvas, setListaProvas] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
 
@@ -49,7 +49,10 @@ function ListProvasScreen() {
       ),
       headerLeft: false,
     });
+  });
 
+  useEffect(() => {
+    setDidMount(true);
     const getProvas = async () => {
       try {
         const response = await api.get('http://192.168.0.12:5000/provas', {
@@ -67,7 +70,12 @@ function ListProvasScreen() {
       }
     };
     getProvas();
-  }, [listaProvas, navigation, token]);
+    return () => setDidMount(false);
+  }, [token, listaProvas]);
+
+  if (!didMount) {
+    return null;
+  }
 
   return (
     <Container>

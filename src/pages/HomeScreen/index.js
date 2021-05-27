@@ -14,7 +14,17 @@ import {
 
 const HomeScreen = () => {
   const navigation = useNavigation();
-  const {nome, dataNasc, curso} = useSelector(state => state.userReducer);
+  const {nome} = useSelector(state => state.userReducer);
+  var date = new Date().getHours();
+  console.log(date);
+  var mensagem;
+  if (date >= 6 && date < 12) {
+    mensagem = 'Bom dia,';
+  } else if (date >= 12 && date < 18) {
+    mensagem = 'Boa tarde,';
+  } else {
+    mensagem = 'Boa noite,';
+  }
 
   useLayoutEffect(() => {
     navigation.setOptions({
@@ -43,13 +53,13 @@ const HomeScreen = () => {
   return (
     <Container>
       <Header>
-        <Title>Seja bem-vindo, {nome}!</Title>
+        <Title>
+          {mensagem} {nome}
+        </Title>
         <Description>
-          Data de data de nascimento: {dataNasc}
-          Curso: {curso}O YoutHealth foi criado para ajudar você, estudade, a
-          ter um melhor controle sobre sua alimentação! Navegue entre o nosso
-          menu de opções e comece agora mesmo a aproveitar nosso App da melhor
-          forma possível.
+          O YoutHealth foi criado para ajudar você, estudade, a ter um melhor
+          controle sobre sua alimentação! Navegue entre o nosso menu de opções e
+          comece agora mesmo a aproveitar nosso App da melhor forma possível.
         </Description>
         <Image source={require('../../assets/logo/logo.png')} />
       </Header>

@@ -1,4 +1,4 @@
-import React, {useState, useLayoutEffect} from 'react';
+import React, {useState, useLayoutEffect, useEffect} from 'react';
 import {useSelector} from 'react-redux';
 import {useNavigation} from '@react-navigation/native';
 import {
@@ -25,6 +25,7 @@ function ListAlimentosScreen() {
   const navigation = useNavigation();
   const {token} = useSelector(state => state.userReducer);
 
+  const [didMount, setDidMount] = useState(false);
   const [listaAlimentos, setListaAlimentos] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
 
@@ -46,7 +47,10 @@ function ListAlimentosScreen() {
         </AddButton>
       ),
     });
+  });
 
+  useEffect(() => {
+    setDidMount(true);
     const getAlimentos = async () => {
       try {
         const response = await api.get('http://192.168.0.12:5000/alimentos', {
@@ -64,7 +68,12 @@ function ListAlimentosScreen() {
       }
     };
     getAlimentos();
-  }, [listaAlimentos, navigation, token]);
+    return () => setDidMount(false);
+  }, [token, listaAlimentos]);
+
+  if (!didMount) {
+    return null;
+  }
 
   return (
     <Container>

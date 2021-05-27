@@ -14,7 +14,6 @@ const RefeicaoSchema = new mongoose.Schema({
     type: String,
     require: true,
   },
-  /*
   alimentos: [
     {
       type: mongoose.Schema.Types.ObjectId,
@@ -22,7 +21,6 @@ const RefeicaoSchema = new mongoose.Schema({
       require: true,
     },
   ],
-  */
   createdAt: {
     type: Date,
     default: Date.now,
