@@ -22,9 +22,9 @@ router.get('/', async (req, res) => {
 
 router.get('/:refeicaoId', async (req, res) => {
   try {
-    const refeicao = await Refeicao.findById(req.params.refeicaoId).populate(
-      'idAluno',
-    );
+    const refeicao = await Refeicao.findById(req.params.refeicaoId)
+      .populate('idAluno')
+      .populate('alimentos');
 
     return res.send({refeicao});
   } catch (error) {

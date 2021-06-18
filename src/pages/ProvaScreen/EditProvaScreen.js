@@ -94,6 +94,7 @@ function EditProvaScreen() {
       const deletarProva = async () => {
         try {
           await api.delete('http://192.168.0.12:5000/provas/' + idProva, {
+            //await api.delete('http://192.168.1.104:5000/provas/' + idProva, {
             headers: {
               autorization: token,
             },
@@ -112,6 +113,7 @@ function EditProvaScreen() {
         try {
           const response = await api.get(
             'http://192.168.0.12:5000/provas/' + idProva,
+            //'http://192.168.1.104:5000/provas/' + idProva,
             {
               headers: {
                 autorization: token,
@@ -144,6 +146,7 @@ function EditProvaScreen() {
     try {
       await api.post(
         'http://192.168.0.12:5000/provas',
+        //'http://192.168.1.104:5000/provas',
         {
           dataProva: dataProva,
           materia: materia,
@@ -170,6 +173,7 @@ function EditProvaScreen() {
     try {
       await api.put(
         'http://192.168.0.12:5000/provas/' + idProva,
+        //'http://192.168.1.104:5000/provas/' + idProva,
         {
           dataProva: dataProva,
           materia: materia,

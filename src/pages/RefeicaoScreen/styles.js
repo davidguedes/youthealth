@@ -121,8 +121,9 @@ export const Title = styled.Text`
 `;
 
 export const BoxAlimento = styled.View`
+  display: flex;
   align-items: center;
-  justify-content: center;
+  justify-content: space-between;
   margin-bottom: 10px;
   background-color: #c1c1c1;
   border-radius: 34px;
@@ -131,18 +132,27 @@ export const BoxAlimento = styled.View`
 `;
 
 export const BodyAlimentoItem = styled.View`
-  flex-direction: row;
   align-items: center;
 `;
 
+export const AlimentoItemText = styled.Text`
+  font-size: 20px;
+  text-align: center;
+  text-transform: uppercase;
+  margin-left: 20px;
+`;
+
+export const BodyButtonDelete = styled.View`
+  align-items: center;
+`;
 export const ButtonDelete = styled.TouchableHighlight`
   align-items: center;
   justify-content: center;
   border-radius: 100px;
   width: 30px;
   height: 30px;
-  background-color: #ff6961;
 `;
+//background-color: #ff6961;
 
 export const ButtonDeleteText = styled.Text`
   font-size: 20px;

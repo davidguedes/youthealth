@@ -57,6 +57,7 @@ function ListRefeicoesScreen() {
     const getRefeicoes = async () => {
       try {
         const response = await api.get('http://192.168.0.12:5000/refeicoes', {
+          //const response = await api.get('http://192.168.1.104:5000/refeicoes', {
           headers: {
             autorization: token,
           },

@@ -18,8 +18,10 @@ import {
   Title,
   BoxAlimento,
   BodyAlimentoItem,
+  AlimentoItemText,
+  BodyButtonDelete,
   ButtonDelete,
-  ButtonDeleteText,
+  //  ButtonDeleteText,
   BoxModal,
   BoxBodyModal,
   ButtonCloseModal,
@@ -75,7 +77,7 @@ function EditRefeicaoScreen() {
   const [show, setShow] = useState(false);
   const [modalAlimentos, setModalAlimentos] = useState(false);
   const [listaAlimentos, setListaAlimentos] = useState([]);
-  const [listaAlimentosReserva, setListaAlimentosReserva] = useState([]);
+  //  const [listaAlimentosReserva, setListaAlimentosReserva] = useState([]);
   //const [didMount, setDidMount] = useState(false);
 
   const onChangeTime = (event, selectedDate) => {
@@ -133,6 +135,9 @@ function EditRefeicaoScreen() {
       const deletarRefeicao = async () => {
         try {
           await api.delete('http://192.168.0.12:5000/refeicoes/' + idRefeicao, {
+            //await api.delete(
+            //  'http://192.168.1.104:5000/refeicoes/' + idRefeicao,
+            //  {
             headers: {
               autorization: token,
             },
@@ -155,6 +160,7 @@ function EditRefeicaoScreen() {
         try {
           const response = await api.get(
             'http://192.168.0.12:5000/refeicoes/' + idRefeicao,
+            //'http://192.168.1.104:5000/refeicoes/' + idRefeicao,
             {
               headers: {
                 autorization: token,
@@ -164,11 +170,7 @@ function EditRefeicaoScreen() {
           if (response.data.refeicao) {
             setDataRefeicao(new Date(response.data.refeicao.dataRefeicao));
             setSelectedPeriodo(response.data.refeicao.periodo);
-            Alert.alert(
-              'Alimentos',
-              response.data.refeicao.alimentos.toString(),
-            );
-            //setAlimentos(response.data.refeicao.alimentos);
+            setAlimentos(response.data.refeicao.alimentos);
           }
         } catch (err) {
           console.log(err);
@@ -182,16 +184,53 @@ function EditRefeicaoScreen() {
     const getAlimentos = async () => {
       try {
         const response = await api.get('http://192.168.0.12:5000/alimentos', {
+          //const response = await api.get('http://192.168.1.104:5000/alimentos', {
           headers: {
             autorization: token,
           },
         });
-        if (response.data.alimentos.length >= 0) {
-          setListaAlimentos([...response.data.alimentos]);
-          setListaAlimentosReserva([...response.data.alimentos]);
-          //console.log(listaAlimentos);
-          console.log('Alimentos carregados!');
+        if (alimentos.length > 0) {
+          console.log('entra aqui');
+          //var alimentosFiltrados = [];
+
+          for (var x = 0; x < alimentos.length; x++) {
+            for (var i = 0; i < response.data.alimentos.length; i++) {
+              /*
+              console.log(
+                'ID alimentos do get posicao : + ' +
+                  i +
+                  ' Alimento: ' +
+                  response.data.alimentos[i] +
+                  '. ID alimentos selecionados posicao : ' +
+                  x +
+                  ' Alimento: ' +
+                  alimentos[x],
+              );
+              */
+              /*
+              if (response.data.alimentos[i]._id !== alimentos[x]._id) {
+                alimentosFiltrados.push(response.data.alimentos[i]);
+                console.log(response.data.alimentos[i]);
+              }
+              */
+              if (alimentos[x]._id === response.data.alimentos[i]._id) {
+                console.log(alimentos[x].descricao);
+                response.data.alimentos.splice(i, 1);
+              }
+            }
+          }
+          /*
+          var alimentosFiltrados = response.data.alimentos.filter(alimento =>
+            alimentos.some(a => a.descricao === alimento.descricao),
+          );
+          */
+          //setListaAlimentos(alimentosFiltrados);
         }
+        /* else {
+          setListaAlimentos(response.data.alimentos);
+        }*/
+        setListaAlimentos(response.data.alimentos);
+        console.log('Alimentos carregados!');
       } catch (err) {
         console.log(err);
       } finally {
@@ -199,10 +238,37 @@ function EditRefeicaoScreen() {
       }
     };
     getAlimentos();
-  }, [token]);
+  }, [alimentos, token, modalAlimentos]);
 
+  /*var alimentosFiltrados = response.data.alimentos.filter(
+              alimento => alimentos.includes(alimento) === false,
+            );
+
+            var alimentosFiltrados = response.data.alimentos.filter(alimento =>
+              alimentos.some(a => a._id !== alimento._id),
+            );
+
+            Alert.alert(
+              'Lista aliemntos, elemento 1: ' + alimentos[0].descricao,
+              '. Lista todos alimentos, elemento 1: ' +
+                response.data.alimentos[0].descricao,
+            );
+
+            var alimentosFiltrados = [];
+            for (var i = 0; i < response.data.alimentos.length; i++) {
+              if (
+                alimentos.some(
+                  a => a.descricao !== response.data.alimentos[i].descricao,
+                )
+              ) {
+                console.log(response.data.alimentos[i].descricao);
+                alimentosFiltrados.push(response.data.alimentos[i]);
+              }
+            }*/
+
+  /*
   useEffect(() => {
-    if (alimentos.length > 0) {
+    if (alimentos.length !== 0 || alimentos.length !== null) {
       console.log(alimentos.length);
       var alimentosFiltrados = listaAlimentosReserva.filter(
         alimento => alimentos.includes(alimento) === false,
@@ -211,11 +277,14 @@ function EditRefeicaoScreen() {
       setListaAlimentos([...alimentosFiltrados]);
     }
   }, [alimentos, listaAlimentosReserva]);
+*/
 
   const cadastrarRefeicao = async () => {
+    console.log(alimentos);
     try {
       await api.post(
         'http://192.168.0.12:5000/refeicoes',
+        //'http://192.168.1.104:5000/refeicoes',
         {
           dataRefeicao: dataRefeicao,
           periodo: selectedPeriodo,
@@ -241,6 +310,7 @@ function EditRefeicaoScreen() {
     try {
       await api.put(
         'http://192.168.0.12:5000/refeicoes' + idRefeicao,
+        //'http://192.168.1.104:5000/refeicoes' + idRefeicao,
         {
           dataRefeicao: dataRefeicao,
           periodo: selectedPeriodo,
@@ -290,9 +360,16 @@ function EditRefeicaoScreen() {
     setModalAlimentos(!modalAlimentos);
   };
 
-  const deleteItemLista = idItem => {
-    //alimentos.findbyidAndRemove(idItem);
-    Alert.alert('Deletar', 'Botão deletar pressionado. ' + idItem);
+  const deleteItemLista = item => {
+    var indexAlimento = alimentos.indexOf(item);
+    console.log('Index do aliemento: ' + indexAlimento);
+    alimentos.splice(indexAlimento, 1);
+
+    var alimentosFiltrados = listaAlimentos.filter(
+      alimento => alimentos.includes(alimento) === false,
+    );
+    console.log('Alimentos filtrados');
+    setListaAlimentos([...alimentosFiltrados]);
   };
 
   return (
@@ -411,8 +488,18 @@ function EditRefeicaoScreen() {
                   <BoxAlimento>
                     <>
                       <BodyAlimentoItem>
-                        <Title>{descricao}</Title>
+                        <AlimentoItemText>{descricao}</AlimentoItemText>
                       </BodyAlimentoItem>
+                      <BodyButtonDelete>
+                        <ButtonDelete
+                          activeOpacity={0.6}
+                          underlayColor="#DDDDDD"
+                          onPress={() => deleteItemLista(item)}>
+                          <DeleteButtonImage
+                            source={require('../../assets/icons/delete.png')}
+                          />
+                        </ButtonDelete>
+                      </BodyButtonDelete>
                     </>
                   </BoxAlimento>
                 );
