@@ -46,7 +46,17 @@ router.post('/', async (req, res) => {
 });
 
 router.put('/:refeicaoId', async (req, res) => {
-  res.send({user: req.userId});
+  try {
+    const refeicao = await Refeicao.findByIdAndUpdate(
+      req.params.refeicaoId,
+      req.body,
+    );
+
+    return res.send({refeicao});
+  } catch (error) {
+    console.log(error);
+    return res.status(400).send({error: 'Erro ao alterar a refeição!'});
+  }
 });
 
 router.delete('/:refeicaoId', async (req, res) => {

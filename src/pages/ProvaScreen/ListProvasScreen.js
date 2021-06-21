@@ -56,7 +56,6 @@ function ListProvasScreen() {
     const getProvas = async () => {
       try {
         const response = await api.get('http://192.168.0.12:5000/provas', {
-          //const response = await api.get('http://192.168.1.104:5000/provas', {
           headers: {
             autorization: token,
           },

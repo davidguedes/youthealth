@@ -24,7 +24,6 @@ const RegisterScren = () => {
   const getCursos = async () => {
     try {
       const response = await api.get('http://192.168.0.12:5000/cursos', {});
-      //const response = await api.get('http://192.168.1.104:5000/cursos', {});
       if (response.data.cursos.length > 0) {
         setCursos([...response.data.cursos]);
       }
@@ -56,7 +55,6 @@ const RegisterScren = () => {
     try {
       const response = await api.post(
         'http://192.168.0.12:5000/auth/register',
-        //'http://192.168.1.104:5000/auth/register',
         {
           nome: nome,
           dataNasc: dataNasc,

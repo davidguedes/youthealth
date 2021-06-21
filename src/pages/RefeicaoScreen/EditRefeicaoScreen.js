@@ -77,7 +77,7 @@ function EditRefeicaoScreen() {
   const [show, setShow] = useState(false);
   const [modalAlimentos, setModalAlimentos] = useState(false);
   const [listaAlimentos, setListaAlimentos] = useState([]);
-  //  const [listaAlimentosReserva, setListaAlimentosReserva] = useState([]);
+  const [textButton, setTextButton] = useState('');
   //const [didMount, setDidMount] = useState(false);
 
   const onChangeTime = (event, selectedDate) => {
@@ -135,9 +135,6 @@ function EditRefeicaoScreen() {
       const deletarRefeicao = async () => {
         try {
           await api.delete('http://192.168.0.12:5000/refeicoes/' + idRefeicao, {
-            //await api.delete(
-            //  'http://192.168.1.104:5000/refeicoes/' + idRefeicao,
-            //  {
             headers: {
               autorization: token,
             },
@@ -152,6 +149,7 @@ function EditRefeicaoScreen() {
         }
       };
     }
+    setTextButton(type === 'addRefeicao' ? 'Cadastrar' : 'Salvar');
   }, [idRefeicao, navigation, token, type]);
 
   useEffect(() => {
@@ -160,7 +158,6 @@ function EditRefeicaoScreen() {
         try {
           const response = await api.get(
             'http://192.168.0.12:5000/refeicoes/' + idRefeicao,
-            //'http://192.168.1.104:5000/refeicoes/' + idRefeicao,
             {
               headers: {
                 autorization: token,
@@ -184,7 +181,6 @@ function EditRefeicaoScreen() {
     const getAlimentos = async () => {
       try {
         const response = await api.get('http://192.168.0.12:5000/alimentos', {
-          //const response = await api.get('http://192.168.1.104:5000/alimentos', {
           headers: {
             autorization: token,
           },
@@ -195,40 +191,13 @@ function EditRefeicaoScreen() {
 
           for (var x = 0; x < alimentos.length; x++) {
             for (var i = 0; i < response.data.alimentos.length; i++) {
-              /*
-              console.log(
-                'ID alimentos do get posicao : + ' +
-                  i +
-                  ' Alimento: ' +
-                  response.data.alimentos[i] +
-                  '. ID alimentos selecionados posicao : ' +
-                  x +
-                  ' Alimento: ' +
-                  alimentos[x],
-              );
-              */
-              /*
-              if (response.data.alimentos[i]._id !== alimentos[x]._id) {
-                alimentosFiltrados.push(response.data.alimentos[i]);
-                console.log(response.data.alimentos[i]);
-              }
-              */
               if (alimentos[x]._id === response.data.alimentos[i]._id) {
                 console.log(alimentos[x].descricao);
                 response.data.alimentos.splice(i, 1);
               }
             }
           }
-          /*
-          var alimentosFiltrados = response.data.alimentos.filter(alimento =>
-            alimentos.some(a => a.descricao === alimento.descricao),
-          );
-          */
-          //setListaAlimentos(alimentosFiltrados);
         }
-        /* else {
-          setListaAlimentos(response.data.alimentos);
-        }*/
         setListaAlimentos(response.data.alimentos);
         console.log('Alimentos carregados!');
       } catch (err) {
@@ -240,51 +209,11 @@ function EditRefeicaoScreen() {
     getAlimentos();
   }, [alimentos, token, modalAlimentos]);
 
-  /*var alimentosFiltrados = response.data.alimentos.filter(
-              alimento => alimentos.includes(alimento) === false,
-            );
-
-            var alimentosFiltrados = response.data.alimentos.filter(alimento =>
-              alimentos.some(a => a._id !== alimento._id),
-            );
-
-            Alert.alert(
-              'Lista aliemntos, elemento 1: ' + alimentos[0].descricao,
-              '. Lista todos alimentos, elemento 1: ' +
-                response.data.alimentos[0].descricao,
-            );
-
-            var alimentosFiltrados = [];
-            for (var i = 0; i < response.data.alimentos.length; i++) {
-              if (
-                alimentos.some(
-                  a => a.descricao !== response.data.alimentos[i].descricao,
-                )
-              ) {
-                console.log(response.data.alimentos[i].descricao);
-                alimentosFiltrados.push(response.data.alimentos[i]);
-              }
-            }*/
-
-  /*
-  useEffect(() => {
-    if (alimentos.length !== 0 || alimentos.length !== null) {
-      console.log(alimentos.length);
-      var alimentosFiltrados = listaAlimentosReserva.filter(
-        alimento => alimentos.includes(alimento) === false,
-      );
-      console.log('Feito!');
-      setListaAlimentos([...alimentosFiltrados]);
-    }
-  }, [alimentos, listaAlimentosReserva]);
-*/
-
   const cadastrarRefeicao = async () => {
     console.log(alimentos);
     try {
       await api.post(
         'http://192.168.0.12:5000/refeicoes',
-        //'http://192.168.1.104:5000/refeicoes',
         {
           dataRefeicao: dataRefeicao,
           periodo: selectedPeriodo,
@@ -309,8 +238,7 @@ function EditRefeicaoScreen() {
   const editarRefeicao = async () => {
     try {
       await api.put(
-        'http://192.168.0.12:5000/refeicoes' + idRefeicao,
-        //'http://192.168.1.104:5000/refeicoes' + idRefeicao,
+        'http://192.168.0.12:5000/refeicoes/' + idRefeicao,
         {
           dataRefeicao: dataRefeicao,
           periodo: selectedPeriodo,
@@ -390,33 +318,45 @@ function EditRefeicaoScreen() {
                 />
               </FindButton>
             </FindArea>
-            <FlatList
-              data={listaAlimentos}
-              showsVerticalScrollIndicator={false}
-              showsHorizontalScrollIndicator={false}
-              keyExtractor={item => item._id.toString()}
-              renderItem={({item}) => {
-                const {descricao} = item;
-                return (
-                  <Box
-                    activeOpacity={0.6}
-                    underlayColor="#DDDDDD"
-                    onPress={() => {
-                      let vetAux = [];
-                      vetAux.push(item);
-                      setAlimentos([].concat(vetAux, alimentos));
-                      setModalAlimentos(!modalAlimentos);
-                      console.log(alimentos);
-                    }}>
-                    <>
-                      <BodyItem>
-                        <Title>{descricao}</Title>
-                      </BodyItem>
-                    </>
-                  </Box>
-                );
-              }}
-            />
+            {listaAlimentos.length === 0 && (
+              <>
+                <NoAlimentos>
+                  <NoAlimentosImage
+                    source={require('../../assets/icons/harvest.png')}
+                  />
+                  <NoAlimentosText>Nenhum alimento</NoAlimentosText>
+                </NoAlimentos>
+              </>
+            )}
+            {listaAlimentos.length !== 0 && (
+              <FlatList
+                data={listaAlimentos}
+                showsVerticalScrollIndicator={false}
+                showsHorizontalScrollIndicator={false}
+                keyExtractor={item => item._id.toString()}
+                renderItem={({item}) => {
+                  const {descricao} = item;
+                  return (
+                    <Box
+                      activeOpacity={0.6}
+                      underlayColor="#DDDDDD"
+                      onPress={() => {
+                        let vetAux = [];
+                        vetAux.push(item);
+                        setAlimentos([].concat(vetAux, alimentos));
+                        setModalAlimentos(!modalAlimentos);
+                        console.log(alimentos);
+                      }}>
+                      <>
+                        <BodyItem>
+                          <Title>{descricao}</Title>
+                        </BodyItem>
+                      </>
+                    </Box>
+                  );
+                }}
+              />
+            )}
             <ButtonCloseModal
               activeOpacity={0.6}
               underlayColor="#DDDDDD"
@@ -517,7 +457,7 @@ function EditRefeicaoScreen() {
           activeOpacity={0.6}
           underlayColor="#DDDDDD"
           onPress={toggleRegisterClick}>
-          <TextButton>Cadastrar</TextButton>
+          <TextButton>{textButton}</TextButton>
         </DefaultButton>
       </KeyboardArea>
     </Container>

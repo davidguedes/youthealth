@@ -44,7 +44,6 @@ const LoginScreen = () => {
     try {
       const response = await api.post(
         'http://192.168.0.12:5000/auth/authenticate',
-        //'http://192.168.1.104:5000/auth/authenticate',
         {
           idAluno: login,
           senha: senha,
