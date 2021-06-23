@@ -10,7 +10,7 @@ router.use(authMiddleware);
 
 router.get('/', async (req, res) => {
   try {
-    const alimentos = await Alimento.find();
+    const alimentos = await Alimento.find().populate('categoria');
 
     return res.send({alimentos});
   } catch (error) {
@@ -20,7 +20,9 @@ router.get('/', async (req, res) => {
 
 router.get('/:alimentoId', async (req, res) => {
   try {
-    const alimento = await Alimento.findById(req.params.alimentoId);
+    const alimento = await Alimento.findById(req.params.alimentoId).populate(
+      'categoria',
+    );
 
     return res.send({alimento});
   } catch (error) {
@@ -30,7 +32,7 @@ router.get('/:alimentoId', async (req, res) => {
 
 router.post('/', async (req, res) => {
   try {
-    const alimento = await Alimento.create(req.body);
+    const alimento = await Alimento.create({...req.body});
 
     return res.send({alimento});
   } catch (error) {

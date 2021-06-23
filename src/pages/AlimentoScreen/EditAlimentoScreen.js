@@ -122,7 +122,7 @@ function EditAlimentoScreen() {
           );
           if (response.data.alimento) {
             setDescricao(response.data.alimento.descricao);
-            setSelectedCategoria(response.data.alimento.categoria);
+            setSelectedCategoria(response.data.alimento.categoria._id);
           }
         } catch (err) {
           console.log(err);
@@ -255,7 +255,7 @@ function EditAlimentoScreen() {
                 <Picker.Item
                   style={{color: '#FFFFFF'}}
                   label={item.titulo}
-                  value={item.valor}
+                  value={item._id}
                   key={index}
                 />
               );

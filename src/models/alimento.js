@@ -7,7 +7,8 @@ const AlimentoSchema = new mongoose.Schema({
     unique: true,
   },
   categoria: {
-    type: String,
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Categoria',
     require: true,
   },
 });

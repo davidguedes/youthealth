@@ -120,7 +120,7 @@ function ListAlimentosScreen() {
                   <>
                     <BodyItem>
                       <Title>{descricao}</Title>
-                      <TextCat>{categoria}</TextCat>
+                      <TextCat>{categoria.titulo}</TextCat>
                     </BodyItem>
                   </>
                 </Box>
