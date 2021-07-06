@@ -16,7 +16,6 @@ const HomeScreen = () => {
   const navigation = useNavigation();
   const {nome} = useSelector(state => state.userReducer);
   var date = new Date().getHours();
-  console.log(date);
   var mensagem;
   if (date >= 6 && date < 12) {
     mensagem = 'Bom dia,';

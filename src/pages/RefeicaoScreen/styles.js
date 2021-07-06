@@ -39,6 +39,15 @@ export const AddButtonImage = styled(Img)`
   height: 24px;
 `;
 
+export const RelatorioButton = styled.TouchableHighlight`
+  margin-left: 15px;
+`;
+
+export const RelatorioButtonImage = styled(Img)`
+  width: 24px;
+  height: 24px;
+`;
+
 export const NoRefeicoes = styled.View`
   align-items: center;
   justify-content: center;
@@ -59,6 +68,13 @@ export const FlatList = styled.FlatList`
   width: 100%;
   max-height: 80%;
   padding: 0px 10px;
+`;
+
+export const FlatListRelatorio = styled.FlatList`
+  flex: 1;
+  width: 100%;
+  padding: 0px 10px;
+  max-height: 40%;
 `;
 
 export const FlatListRefeicoes = styled.FlatList`

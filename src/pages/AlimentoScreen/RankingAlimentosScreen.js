@@ -3,10 +3,8 @@ import {useSelector} from 'react-redux';
 import {useNavigation} from '@react-navigation/native';
 import {
   Container,
-  AddButton,
-  AddButtonImage,
-  RankingButton,
-  RankingButtonImage,
+  CancelButton,
+  CancelButtonImage,
   NoAlimentos,
   NoAlimentosImage,
   NoAlimentosText,
@@ -23,54 +21,49 @@ import {Box, BodyItem, Title, TextCat} from '../../components/AlimentoItem';
 import Spinner from 'react-native-loading-spinner-overlay';
 const api = require('axios');
 
-function ListAlimentosScreen() {
+function RankingAlimentosScreen() {
   const navigation = useNavigation();
   const {token} = useSelector(state => state.userReducer);
 
   const [didMount, setDidMount] = useState(false);
-  const [listaAlimentos, setListaAlimentos] = useState([]);
+  const [rankingAlimentos, setRankingAlimentos] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
 
   useLayoutEffect(() => {
     navigation.setOptions({
-      title: 'Alimentos',
+      title: 'Ranking Alimentos',
       headerRight: false,
       headerLeft: false,
     });
 
     navigation.setOptions({
       headerLeft: () => (
-        <RankingButton
+        <CancelButton
           underlayColor="transparent"
-          onPress={() => navigation.navigate('RankingAlimentos')}>
-          <RankingButtonImage
-            source={require('../../assets/icons/ranking.png')}
+          onPress={() => navigation.goBack()}>
+          <CancelButtonImage
+            source={require('../../assets/icons/cancel.png')}
           />
-        </RankingButton>
+        </CancelButton>
       ),
-      headerRight: () => (
-        <AddButton
-          underlayColor="transparent"
-          onPress={() =>
-            navigation.navigate('EditAlimento', {type: 'addAlimento'})
-          }>
-          <AddButtonImage source={require('../../assets/icons/add.png')} />
-        </AddButton>
-      ),
+      headerRight: false,
     });
   });
 
   useEffect(() => {
     setDidMount(true);
-    const getAlimentos = async () => {
+    const getRankingAlimentos = async () => {
       try {
-        const response = await api.get('http://192.168.0.12:5000/alimentos', {
-          headers: {
-            autorization: token,
+        const response = await api.get(
+          'http://192.168.0.12:5000/alimentos/ranking/refeicoes',
+          {
+            headers: {
+              autorization: token,
+            },
           },
-        });
+        );
         if (response.data.alimentos.length >= 0) {
-          setListaAlimentos([...response.data.alimentos]);
+          setRankingAlimentos([...response.data.alimentos]);
         }
       } catch (err) {
         console.log(err);
@@ -78,9 +71,9 @@ function ListAlimentosScreen() {
         setIsLoading(false);
       }
     };
-    getAlimentos();
+    getRankingAlimentos();
     return () => setDidMount(false);
-  }, [token, listaAlimentos]);
+  }, [token, rankingAlimentos]);
 
   if (!didMount) {
     return null;
@@ -89,15 +82,17 @@ function ListAlimentosScreen() {
   return (
     <Container>
       <Spinner visible={isLoading} />
-      {listaAlimentos.length === 0 && (
+      {rankingAlimentos.length === 0 && (
         <NoAlimentos>
           <NoAlimentosImage
             source={require('../../assets/icons/harvest.png')}
           />
-          <NoAlimentosText>Nenhum alimento</NoAlimentosText>
+          <NoAlimentosText>
+            Nenhum alimento para compor o ranking
+          </NoAlimentosText>
         </NoAlimentos>
       )}
-      {listaAlimentos.length > 0 && (
+      {rankingAlimentos.length > 0 && (
         <>
           <FindArea>
             <FindInput
@@ -112,50 +107,29 @@ function ListAlimentosScreen() {
             </FindButton>
           </FindArea>
           <FlatList
-            data={listaAlimentos}
+            data={rankingAlimentos}
             showsVerticalScrollIndicator={false}
             showsHorizontalScrollIndicator={false}
             keyExtractor={item => item._id.toString()}
             renderItem={({item}) => {
-              const {descricao, categoria} = item;
+              const {descricao, refeicoesPresentes} = item;
               return (
-                <Box
-                  activeOpacity={0.6}
-                  underlayColor="#DDDDDD"
-                  onPress={() =>
-                    navigation.navigate('EditAlimento', {
-                      type: 'editAlimento',
-                      idAlimento: item._id,
-                    })
-                  }>
-                  <>
-                    <BodyItem>
-                      <Title>{descricao}</Title>
-                      <TextCat>{categoria.titulo}</TextCat>
-                    </BodyItem>
-                  </>
-                </Box>
-                /*
                 <Box>
                   <>
-                    <HeaderItem>
-                      <Image source={image} resizeMode="contain" />
-                    </HeaderItem>
                     <BodyItem>
                       <Title>{descricao}</Title>
-                      <TextCat>{categorias}</TextCat>
+                      <TextCat>Refeições: {refeicoesPresentes}</TextCat>
                     </BodyItem>
                   </>
                 </Box>
-                */
               );
             }}
           />
-          <TextBottom>Total de alimentos: {listaAlimentos.length}</TextBottom>
+          <TextBottom>Total de alimentos: {rankingAlimentos.length}</TextBottom>
         </>
       )}
     </Container>
   );
 }
 
-export default ListAlimentosScreen;
+export default RankingAlimentosScreen;

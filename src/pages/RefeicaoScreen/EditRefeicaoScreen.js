@@ -119,7 +119,6 @@ function EditRefeicaoScreen() {
               Alert.alert('Deletar', 'Deseja realmente excluir a refeição?', [
                 {
                   text: 'Cancelar',
-                  onPress: () => console.log('Cancel Pressed'),
                   style: 'cancel',
                 },
                 {text: 'Confirmar', onPress: () => deletarRefeicao()},
@@ -199,7 +198,6 @@ function EditRefeicaoScreen() {
           }
         }
         setListaAlimentos(response.data.alimentos);
-        console.log('Alimentos carregados!');
       } catch (err) {
         console.log(err);
       } finally {

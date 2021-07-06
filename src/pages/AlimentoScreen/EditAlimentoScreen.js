@@ -47,7 +47,6 @@ function EditAlimentoScreen() {
   };
 
   useLayoutEffect(() => {
-    console.log('tipo:' + type + '. idAlimento: ' + idAlimento);
     if (type === 'addAlimento') {
       navigation.setOptions({
         title: 'Cadastrar Alimento',
@@ -80,7 +79,6 @@ function EditAlimentoScreen() {
               Alert.alert('Deletar', 'Deseja realmente excluir o alimento?', [
                 {
                   text: 'Cancelar',
-                  onPress: () => console.log('Cancel Pressed'),
                   style: 'cancel',
                 },
                 {text: 'Confirmar', onPress: () => deletarAlimento()},
@@ -157,10 +155,6 @@ function EditAlimentoScreen() {
       Alert.alert('Erro ao cadastrar!', err.response.data.error);
     } finally {
       setIsLoading(false);
-      Alert.alert(
-        'Dados',
-        'Descrição: ' + descricao + ', Categoria: ' + selectedCategoria,
-      );
     }
   };
 

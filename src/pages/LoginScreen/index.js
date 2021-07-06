@@ -61,9 +61,6 @@ const LoginScreen = () => {
           token: 'Bearer ' + response.data.token,
         },
       });
-      console.log(
-        'Token: ' + response.data.token + '. Nome: ' + response.data.user._id,
-      );
       navigation.navigate('Home');
     } catch (err) {
       console.log(err);

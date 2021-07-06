@@ -80,10 +80,7 @@ const RegisterScren = () => {
       navigation.navigate('Home');
     } catch (err) {
       console.log(err);
-      Alert.alert(
-        'Erro ao cadastrar-se',
-        err.response.data.error + 'Dados:' + selectedCurso,
-      );
+      Alert.alert('Erro ao cadastrar-se', err.response.data.error);
       setSenha('');
       setConfirmarSenha('');
     } finally {
@@ -99,36 +96,36 @@ const RegisterScren = () => {
       return;
     } else if (!dataNasc) {
       setIsLoading(false);
-      Alert.alert('Dados inválidos', 'Você precisa de uma data de nascimento');
+      Alert.alert('Dados inválidos', 'Você precisa de uma data de nascimento!');
       this.input_2.focus();
       return;
     } else if (!email) {
       setIsLoading(false);
-      Alert.alert('Dados inválidos', 'Você precisa de um email');
+      Alert.alert('Dados inválidos', 'Você precisa de um email!');
       this.input_3.focus();
       return;
     } else if (!idAluno) {
       setIsLoading(false);
-      Alert.alert('Dados inválidos', 'Você precisa de um ID');
+      Alert.alert('Dados inválidos', 'Você precisa de um ID!');
       this.input_4.focus();
       return;
     } else if (!selectedCurso) {
       setIsLoading(false);
-      Alert.alert('Dados inválidos', 'Você precisa de um curso');
+      Alert.alert('Dados inválidos', 'Você precisa de um curso!');
       return;
     } else if (!senha) {
       setIsLoading(false);
-      Alert.alert('Dados inválidos', 'Você precisa de uma senha');
+      Alert.alert('Dados inválidos', 'Você precisa de uma senha!');
       this.input_6.focus();
       return;
     } else if (!confirmarSenha) {
       setIsLoading(false);
-      Alert.alert('Dados inválidos', 'Você precisa confirmar a senha');
+      Alert.alert('Dados inválidos', 'Você precisa confirmar a senha!');
       this.input_7.focus();
       return;
     } else if (senha !== confirmarSenha) {
       setIsLoading(false);
-      Alert.alert('Dados inválidos', 'As senhas não conferem');
+      Alert.alert('Dados inválidos', 'As senhas não conferem!');
       setSenha('');
       setConfirmarSenha('');
       this.input_6.focus();

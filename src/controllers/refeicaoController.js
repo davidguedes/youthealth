@@ -69,4 +69,30 @@ router.delete('/:refeicaoId', async (req, res) => {
   }
 });
 
+router.get('/all/last', async (req, res) => {
+  try {
+    const refeicao = await Refeicao.find({idAluno: req.userId}, {})
+      .sort({dataRefeicao: -1})
+      .limit(1)
+      .populate('idAluno');
+
+    return res.send({refeicao});
+  } catch (error) {
+    return res.status(400).send({error: 'Erro listar as refeições'});
+  }
+});
+
+router.get('/all/quantity', async (req, res) => {
+  try {
+    const refeicoes = await Refeicao.find(
+      {idAluno: req.userId},
+      {},
+    ).countDocuments();
+
+    return res.send({refeicoes});
+  } catch (error) {
+    return res.status(400).send({error: 'Erro listar as refeições'});
+  }
+});
+
 module.exports = app => app.use('/refeicoes', router);

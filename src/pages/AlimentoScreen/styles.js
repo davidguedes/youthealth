@@ -15,6 +15,14 @@ export const KeyboardArea = styled.KeyboardAvoidingView`
 export const ScrollView = styled.ScrollView`
   max-height: 460px;
 `;
+export const RankingButton = styled.TouchableHighlight`
+  margin-left: 15px;
+`;
+
+export const RankingButtonImage = styled.Image`
+  width: 24px;
+  height: 24px;
+`;
 
 export const AddButton = styled.TouchableHighlight`
   margin-right: 15px;

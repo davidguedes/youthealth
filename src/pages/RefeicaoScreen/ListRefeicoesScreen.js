@@ -5,6 +5,8 @@ import {
   Container,
   AddButton,
   AddButtonImage,
+  RelatorioButton,
+  RelatorioButtonImage,
   NoRefeicoes,
   NoRefeicoesImage,
   NoRefeicoesText,
@@ -39,6 +41,15 @@ function ListRefeicoesScreen() {
   useLayoutEffect(() => {
     navigation.setOptions({
       title: 'Refeições',
+      headerLeft: () => (
+        <RelatorioButton
+          underlayColor="transparent"
+          onPress={() => navigation.navigate('RelatorioRefeicoes')}>
+          <RelatorioButtonImage
+            source={require('../../assets/icons/chart.png')}
+          />
+        </RelatorioButton>
+      ),
       headerRight: () => (
         <AddButton
           underlayColor="transparent"
@@ -48,7 +59,6 @@ function ListRefeicoesScreen() {
           <AddButtonImage source={require('../../assets/icons/add.png')} />
         </AddButton>
       ),
-      headerLeft: false,
     });
   });
 

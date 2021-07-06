@@ -8,6 +8,8 @@ const router = express.Router();
 
 router.use(authMiddleware);
 
+var mongoose = require('mongoose');
+
 router.get('/', async (req, res) => {
   try {
     const alimentos = await Alimento.find().populate('categoria');
@@ -78,6 +80,68 @@ router.delete('/:alimentoId', async (req, res) => {
     return res.send();
   } catch (error) {
     return res.status(400).send({error: 'Erro ao deletar o alimento'});
+  }
+});
+
+router.get('/ranking/refeicoes', async (req, res) => {
+  try {
+    const alimentos = await Alimento.aggregate([
+      {
+        $lookup: {
+          from: 'refeicaos',
+          localField: '_id',
+          foreignField: 'alimentos',
+          as: 'refeicoes',
+        },
+      },
+      {
+        $project: {
+          descricao: 1,
+          refeicoesPresentes: {$size: '$refeicoes'},
+        },
+      },
+      {
+        $sort: {refeicoesPresentes: -1},
+      },
+    ]);
+
+    return res.send({alimentos});
+  } catch (error) {
+    return res
+      .status(400)
+      .send({error: 'Erro ao gerar o ranking dos alimentos'});
+  }
+});
+
+router.get('/ranking/refeicoesAluno/', async (req, res) => {
+  try {
+    const alimentos = await Alimento.aggregate([
+      {
+        $lookup: {
+          from: 'refeicaos',
+          localField: '_id',
+          foreignField: 'alimentos',
+          as: 'refeicoes',
+        },
+      },
+      {
+        $project: {
+          descricao: 1,
+          refeicoesPresentes: {$size: '$refeicoes'},
+          aluno: '$refeicoes.idAluno',
+        },
+      },
+      {$match: {aluno: mongoose.Types.ObjectId(req.userId)}},
+      {
+        $sort: {refeicoesPresentes: -1},
+      },
+      {$limit: 3},
+    ]);
+    return res.send({alimentos});
+  } catch (error) {
+    return res
+      .status(400)
+      .send({error: 'Erro ao gerar o ranking dos alimentos do aluno'});
   }
 });
 

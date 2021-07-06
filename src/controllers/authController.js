@@ -21,11 +21,13 @@ router.post('/register', async (req, res) => {
 
   try {
     if (!nome || !dataNasc || !email || !idAluno || !curso || !senha) {
-      return res.status(400).send({error: 'Preencha todos os campos'});
+      return res.status(400).send({error: 'Preencha todos os campos!'});
     }
 
     if ((await User.findOne({idAluno})) || (await User.findOne({email}))) {
-      return res.status(400).send({error: 'Usuário já registrado'});
+      return res
+        .status(400)
+        .send({error: 'ID de usuário ou email já cadastrado!'});
     }
     const user = await User.create({...req.body, curso: curso});
 
@@ -36,7 +38,7 @@ router.post('/register', async (req, res) => {
       token: generateToken({id: user.id}),
     });
   } catch (err) {
-    res.status(400).send({error: 'Falha ao registrar'});
+    res.status(400).send({error: 'Falha ao registrar!'});
   }
 });
 
@@ -46,10 +48,10 @@ router.post('/authenticate', async (req, res) => {
   const user = await User.findOne({idAluno}).select('+senha');
 
   if (!user) {
-    return res.status(400).send({error: 'Usuário não encontrado'});
+    return res.status(400).send({error: 'Usuário não encontrado!'});
   }
   if (!(await bcrypt.compare(senha, user.senha))) {
-    return res.status(400).send({error: 'Senha inválida'});
+    return res.status(400).send({error: 'Senha inválida!'});
   }
 
   user.senha = undefined;
@@ -67,7 +69,7 @@ router.post('/forgot_password', async (req, res) => {
     const user = await User.findOne({email});
 
     if (!user) {
-      return res.status(400).send({error: 'Usuário não encontrado'});
+      return res.status(400).send({error: 'Usuário não encontrado!'});
     }
     const token = crypto.randomBytes(20).toString('hex');
 
@@ -92,7 +94,7 @@ router.post('/forgot_password', async (req, res) => {
         if (err) {
           return res.status(400).send({
             error:
-              'Não foi possível enviar o email de recuperação de senha, tente novamente',
+              'Não foi possível enviar o email de recuperação de senha, tente novamente!',
           });
         }
         return res.send();
@@ -101,7 +103,7 @@ router.post('/forgot_password', async (req, res) => {
   } catch (error) {
     res
       .status(400)
-      .send({error: 'Erro em Esqueci minha senha, tente novamente'});
+      .send({error: 'Erro em Esqueci minha senha, tente novamente!'});
   }
 });
 
@@ -114,17 +116,17 @@ router.post('/reset_password', async (req, res) => {
     );
 
     if (!user) {
-      return res.status(400).send({error: 'Usuário não encontrado'});
+      return res.status(400).send({error: 'Usuário não encontrado!'});
     }
 
     if (token !== user.senhaResetToken) {
-      return res.status(400).send({error: 'Token inválido'});
+      return res.status(400).send({error: 'Token inválido!'});
     }
 
     const now = new Date();
 
     if (now > user.senhaResetExpires) {
-      return res.status(400).send({error: 'Token expirado, gere um novo'});
+      return res.status(400).send({error: 'Token expirado, gere um novo!'});
     }
 
     user.senha = senha;
@@ -132,7 +134,7 @@ router.post('/reset_password', async (req, res) => {
     await user.save();
     res.send();
   } catch (error) {
-    res.status(400).send({error: 'Erro ao resetar senha, tente novamente'});
+    res.status(400).send({error: 'Erro ao resetar senha, tente novamente!'});
   }
 });
 

@@ -45,7 +45,6 @@ function EditProvaScreen() {
   const [alerta, setAlerta] = useState(false);
 
   useLayoutEffect(() => {
-    console.log('tipo:' + type + '. idProva: ' + idProva);
     if (type === 'addProva') {
       navigation.setOptions({
         title: 'Cadastrar Prova',
@@ -78,7 +77,6 @@ function EditProvaScreen() {
               Alert.alert('Deletar', 'Deseja realmente excluir o alimento?', [
                 {
                   text: 'Cancelar',
-                  onPress: () => console.log('Cancel Pressed'),
                   style: 'cancel',
                 },
                 {text: 'Confirmar', onPress: () => deletarProva()},
@@ -189,17 +187,6 @@ function EditProvaScreen() {
       Alert.alert('Erro ao atualizar!', err.response.data.error);
     } finally {
       setIsLoading(false);
-      Alert.alert(
-        'Dados',
-        'Data da Prova: ' +
-          dataProva +
-          ', Materia: ' +
-          materia +
-          ', Anotações: ' +
-          anotacoes +
-          ', Alerta: ' +
-          alerta,
-      );
     }
   };
 
